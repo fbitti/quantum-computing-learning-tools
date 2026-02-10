@@ -3,7 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { RotateCcw, Play, Trash2, Zap, ChevronRight } from "lucide-react";
+import { Play, Trash2, Zap, ChevronRight } from "lucide-react";
 import CrankControl from "./CrankControl";
 import {
   type RotationOp,
@@ -222,14 +222,6 @@ export default function ControlPanel({
 }: ControlPanelProps) {
   return (
     <div className="flex flex-col gap-4 h-full overflow-y-auto p-4">
-      <div className="flex items-center justify-between flex-wrap gap-2">
-        <h2 className="text-lg font-bold tracking-tight">Bloch Sphere</h2>
-        <Button variant="outline" size="sm" onClick={onReset} data-testid="button-reset">
-          <RotateCcw className="w-3.5 h-3.5 mr-1.5" />
-          Reset |0&rang;
-        </Button>
-      </div>
-
       <StateDisplay coords={coords} />
 
       <Separator />
