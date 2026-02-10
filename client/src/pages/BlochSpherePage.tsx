@@ -10,6 +10,10 @@ import {
   formatAngle,
 } from "@/lib/quantum";
 
+function fixNegZero(s: string): string {
+  return s === "-0.000" || s === "-0.00" || s === "-0.0" || s === "-0" ? s.slice(1) : s;
+}
+
 export default function BlochSpherePage() {
   const [quatState, setQuatState] = useState<QuaternionState>(identityQuat());
   const [history, setHistory] = useState<RotationOp[]>([]);
@@ -77,7 +81,7 @@ export default function BlochSpherePage() {
 
         <div className="absolute top-4 left-4 bg-background/80 backdrop-blur-sm rounded-md px-3 py-1.5 pointer-events-none">
           <span className="text-xs font-mono text-muted-foreground">
-            |&psi;&rang; = ({coords.x.toFixed(2)}, {coords.y.toFixed(2)}, {coords.z.toFixed(2)})
+            |&psi;&rang; = ({fixNegZero(coords.x.toFixed(2))}, {fixNegZero(coords.y.toFixed(2))}, {fixNegZero(coords.z.toFixed(2))})
           </span>
         </div>
 

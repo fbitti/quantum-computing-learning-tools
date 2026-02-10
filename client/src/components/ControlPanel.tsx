@@ -27,6 +27,10 @@ interface ControlPanelProps {
   resetKey?: number;
 }
 
+function fixNegZero(s: string): string {
+  return s === "-0.000" || s === "-0.00" || s === "-0.0" || s === "-0" ? s.slice(1) : s;
+}
+
 function StateDisplay({ coords }: { coords: BlochCoords }) {
   const ket = blochToKet(coords);
   const alphaStr = formatComplex(ket.alpha[0], ket.alpha[1]);
@@ -52,15 +56,15 @@ function StateDisplay({ coords }: { coords: BlochCoords }) {
       <div className="grid grid-cols-3 gap-2 text-xs">
         <div className="bg-red-500/10 dark:bg-red-500/15 rounded-md p-2 text-center">
           <span className="text-muted-foreground block">X</span>
-          <span className="font-mono text-red-600 dark:text-red-400" data-testid="text-coord-x">{coords.x.toFixed(3)}</span>
+          <span className="font-mono text-red-600 dark:text-red-400" data-testid="text-coord-x">{fixNegZero(coords.x.toFixed(3))}</span>
         </div>
         <div className="bg-green-500/10 dark:bg-green-500/15 rounded-md p-2 text-center">
           <span className="text-muted-foreground block">Y</span>
-          <span className="font-mono text-green-600 dark:text-green-400" data-testid="text-coord-y">{coords.y.toFixed(3)}</span>
+          <span className="font-mono text-green-600 dark:text-green-400" data-testid="text-coord-y">{fixNegZero(coords.y.toFixed(3))}</span>
         </div>
         <div className="bg-blue-500/10 dark:bg-blue-500/15 rounded-md p-2 text-center">
           <span className="text-muted-foreground block">Z</span>
-          <span className="font-mono text-blue-600 dark:text-blue-400" data-testid="text-coord-z">{coords.z.toFixed(3)}</span>
+          <span className="font-mono text-blue-600 dark:text-blue-400" data-testid="text-coord-z">{fixNegZero(coords.z.toFixed(3))}</span>
         </div>
       </div>
 

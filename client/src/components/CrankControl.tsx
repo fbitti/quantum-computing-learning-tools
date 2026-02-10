@@ -85,6 +85,9 @@ export default function CrankControl({ axis, color, onRotate, onRotateEnd, label
         onPointerCancel={handlePointerUp}
         data-testid={`crank-${axis}`}
       >
+
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1 h-2.5 rounded-b-sm" style={{ backgroundColor: color, opacity: 0.5 }} />
+
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="w-3 h-3 rounded-full" style={{ backgroundColor: color, opacity: 0.3 }} />
         </div>
