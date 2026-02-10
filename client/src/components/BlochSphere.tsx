@@ -237,8 +237,8 @@ function StateVector({ coords }: { coords: BlochCoords }) {
 }
 
 function RotationRing({ axis, angle, visible }: { axis: "x" | "y" | "z"; angle: number; visible: boolean }) {
-  const { points, arrowPos, arrowDir } = useMemo(() => {
-    if (!visible || Math.abs(angle) < 0.01) return { points: [], arrowPos: null, arrowDir: null };
+  const { points, arrowPos, arrowQuat } = useMemo(() => {
+    if (!visible || Math.abs(angle) < 0.01) return { points: [], arrowPos: null, arrowQuat: null };
     const steps = Math.max(16, Math.round(Math.abs(angle) / (Math.PI / 32)));
     const pts: THREE.Vector3[] = [];
     const r = 1.15;
@@ -256,19 +256,15 @@ function RotationRing({ axis, angle, visible }: { axis: "x" | "y" | "z"; angle: 
     const eps = 0.001 * Math.sign(angle);
     const [nx, ny, nz] = getPoint(angle + eps);
     const tangent = new THREE.Vector3(nx - endPt.x, ny - endPt.y, nz - endPt.z).normalize();
-    return { points: pts, arrowPos: endPt, arrowDir: tangent };
+    const q = new THREE.Quaternion();
+    q.setFromUnitVectors(new THREE.Vector3(0, 1, 0), tangent);
+    return { points: pts, arrowPos: endPt, arrowQuat: q };
   }, [axis, angle, visible]);
 
-  if (!visible || points.length < 2 || !arrowPos || !arrowDir) return null;
+  if (!visible || points.length < 2 || !arrowPos || !arrowQuat) return null;
 
   const colors: Record<string, string> = { x: "#ef4444", y: "#22c55e", z: "#3b82f6" };
   const color = colors[axis];
-
-  const arrowQuat = useMemo(() => {
-    const q = new THREE.Quaternion();
-    q.setFromUnitVectors(new THREE.Vector3(0, 1, 0), arrowDir);
-    return q;
-  }, [arrowDir]);
 
   return (
     <>
