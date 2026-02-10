@@ -125,8 +125,8 @@ export default function BlochSpherePage() {
   }, [isAnimating]);
 
   return (
-    <div className="flex flex-col lg:flex-row h-screen w-full bg-background overflow-hidden">
-      <div className="flex-1 relative min-h-[400px] lg:min-h-0">
+    <div className="flex flex-col lg:flex-row min-h-screen lg:h-screen w-full bg-background lg:overflow-hidden overflow-y-auto">
+      <div className="relative h-[50vh] min-h-[350px] lg:flex-1 lg:h-auto lg:min-h-0 flex-shrink-0">
         <div className="absolute inset-0">
           <BlochSphereCanvas coords={coords} activeRotation={activeRotation} />
         </div>
@@ -165,7 +165,7 @@ export default function BlochSpherePage() {
         )}
       </div>
 
-      <div className="w-full lg:w-[380px] border-t lg:border-t-0 lg:border-l border-border bg-card/50 overflow-y-auto flex-shrink-0">
+      <div className="w-full lg:w-[380px] border-t lg:border-t-0 lg:border-l border-border bg-card/50 lg:overflow-y-auto flex-shrink-0">
         <ControlPanel
           coords={coords}
           history={history}
