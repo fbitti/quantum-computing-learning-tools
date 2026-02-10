@@ -14,11 +14,48 @@ function fixNegZero(s: string): string {
   return s === "-0.000" || s === "-0.00" || s === "-0.0" || s === "-0" ? s.slice(1) : s;
 }
 
+const ANIM_DURATION_MS = 400;
+
+function animateRotation(
+  axis: "x" | "y" | "z",
+  totalAngle: number,
+  duration: number,
+  onStep: (delta: number) => void,
+): Promise<void> {
+  return new Promise(resolve => {
+    let applied = 0;
+    let startTime: number | null = null;
+    const step = (time: number) => {
+      if (startTime === null) startTime = time;
+      const elapsed = time - startTime;
+      const t = Math.min(elapsed / duration, 1);
+      const eased = t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+      const target = totalAngle * eased;
+      const delta = target - applied;
+      if (Math.abs(delta) > 1e-10) {
+        onStep(delta);
+      }
+      applied = target;
+      if (t < 1) {
+        requestAnimationFrame(step);
+      } else {
+        const remainder = totalAngle - applied;
+        if (Math.abs(remainder) > 1e-10) {
+          onStep(remainder);
+        }
+        resolve();
+      }
+    };
+    requestAnimationFrame(step);
+  });
+}
+
 export default function BlochSpherePage() {
   const [quatState, setQuatState] = useState<QuaternionState>(identityQuat());
   const [history, setHistory] = useState<RotationOp[]>([]);
   const [activeRotation, setActiveRotation] = useState<{ axis: "x" | "y" | "z"; angle: number } | null>(null);
   const [resetKey, setResetKey] = useState(0);
+  const [isAnimating, setIsAnimating] = useState(false);
   const accumRef = useRef({ x: 0, y: 0, z: 0 });
 
   const coords = quatToBloch(quatState);
@@ -30,7 +67,6 @@ export default function BlochSpherePage() {
   }, []);
 
   const handleCrankRotateEnd = useCallback((axis: "x" | "y" | "z", totalAngle: number) => {
-    const axisLabel = axis.toUpperCase();
     const label = `R${axis}(${formatAngle(totalAngle)})`;
     setHistory(prev => [...prev, { axis, angle: totalAngle, label }]);
     setActiveRotation(null);
@@ -38,11 +74,15 @@ export default function BlochSpherePage() {
   }, []);
 
   const handlePresetRotate = useCallback((axis: "x" | "y" | "z", angle: number, label: string) => {
-    setQuatState(prev => applyRotation(prev, axis, angle));
-    setHistory(prev => [...prev, { axis, angle, label }]);
-    setActiveRotation({ axis, angle });
-    setTimeout(() => setActiveRotation(null), 600);
-  }, []);
+    if (isAnimating) return;
+    setIsAnimating(true);
+    animateRotation(axis, angle, ANIM_DURATION_MS, (delta) => {
+      setQuatState(prev => applyRotation(prev, axis, delta));
+    }).then(() => {
+      setHistory(prev => [...prev, { axis, angle, label }]);
+      setIsAnimating(false);
+    });
+  }, [isAnimating]);
 
   const handleReset = useCallback(() => {
     setQuatState(identityQuat());
@@ -50,6 +90,7 @@ export default function BlochSpherePage() {
     setActiveRotation(null);
     setResetKey(k => k + 1);
     accumRef.current = { x: 0, y: 0, z: 0 };
+    setIsAnimating(false);
   }, []);
 
   const handleClearHistory = useCallback(() => {
@@ -57,20 +98,19 @@ export default function BlochSpherePage() {
   }, []);
 
   const handleApplySequence = useCallback((ops: RotationOp[]) => {
-    setQuatState(prev => {
-      let state = prev;
+    if (isAnimating) return;
+    setIsAnimating(true);
+    (async () => {
       for (const op of ops) {
-        state = applyRotation(state, op.axis, op.angle);
+        await animateRotation(op.axis, op.angle, ANIM_DURATION_MS, (delta) => {
+          setQuatState(prev => applyRotation(prev, op.axis, delta));
+        });
+        setHistory(prev => [...prev, op]);
+        await new Promise(r => setTimeout(r, 100));
       }
-      return state;
-    });
-    setHistory(prev => [...prev, ...ops]);
-    if (ops.length > 0) {
-      const lastOp = ops[ops.length - 1];
-      setActiveRotation({ axis: lastOp.axis, angle: lastOp.angle });
-      setTimeout(() => setActiveRotation(null), 800);
-    }
-  }, []);
+      setIsAnimating(false);
+    })();
+  }, [isAnimating]);
 
   return (
     <div className="flex flex-col lg:flex-row h-screen w-full bg-background overflow-hidden">
