@@ -1,4 +1,5 @@
 import { useState, useCallback, useRef } from "react";
+import { HelpCircle, X } from "lucide-react";
 import BlochSphereCanvas from "@/components/BlochSphere";
 import ControlPanel from "@/components/ControlPanel";
 import {
@@ -58,6 +59,7 @@ export default function BlochSpherePage() {
   const [activeRotation, setActiveRotation] = useState<{ axis: "x" | "y" | "z"; angle: number } | null>(null);
   const [resetKey, setResetKey] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
+  const [showHelp, setShowHelp] = useState(true);
   const accumRef = useRef({ x: 0, y: 0, z: 0 });
 
   const coords = quatToBloch(quatState);
@@ -135,15 +137,32 @@ export default function BlochSpherePage() {
           </span>
         </div>
 
-        <div className="absolute bottom-4 left-4 right-4 lg:right-auto max-w-sm">
-          <div className="bg-background/80 backdrop-blur-sm rounded-md px-3 py-2 text-[10px] text-muted-foreground space-y-0.5">
-            <p className="font-semibold text-xs text-foreground mb-1">How to use</p>
-            <p>Drag the cranks on the right to apply Rx, Ry, Rz rotations.</p>
-            <p>Use preset angle buttons for exact quantum gate angles.</p>
-            <p>Try the "Gates" tab to see gate decompositions like H = Rz(&pi;/2) Rx(&pi;/2) Rz(&pi;/2).</p>
-            <p>Scroll or pinch to zoom. Drag the sphere background to orbit the camera.</p>
+        {showHelp ? (
+          <div className="absolute bottom-4 left-4 right-4 lg:right-auto max-w-sm">
+            <div className="bg-background/80 backdrop-blur-sm rounded-md px-3 py-2 text-[10px] text-muted-foreground space-y-0.5 relative">
+              <button
+                onClick={() => setShowHelp(false)}
+                className="absolute top-1.5 right-1.5 text-muted-foreground/60 hover-elevate rounded-sm p-0.5"
+                data-testid="button-close-help"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+              <p className="font-semibold text-xs text-foreground mb-1">How to use</p>
+              <p>Drag the cranks on the right to apply Rx, Ry, Rz rotations.</p>
+              <p>Use preset angle buttons for exact quantum gate angles.</p>
+              <p>Try the "Gates" tab to see gate decompositions like H = Rz(&pi;/2) Rx(&pi;/2) Rz(&pi;/2).</p>
+              <p>Scroll or pinch to zoom. Drag the sphere background to orbit the camera.</p>
+            </div>
           </div>
-        </div>
+        ) : (
+          <button
+            onClick={() => setShowHelp(true)}
+            className="absolute bottom-4 left-4 bg-background/80 backdrop-blur-sm rounded-md p-1.5 text-muted-foreground hover-elevate"
+            data-testid="button-show-help"
+          >
+            <HelpCircle className="w-5 h-5" />
+          </button>
+        )}
       </div>
 
       <div className="w-full lg:w-[380px] border-t lg:border-t-0 lg:border-l border-border bg-card/50 overflow-y-auto flex-shrink-0">
