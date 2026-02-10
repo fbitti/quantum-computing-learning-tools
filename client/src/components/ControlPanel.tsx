@@ -165,11 +165,11 @@ function OperationHistory({ history, onClearHistory }: { history: RotationOp[]; 
   );
 }
 
-function KnownSequences({ onApplySequence, onReset }: { onApplySequence: (ops: RotationOp[]) => void; onReset: () => void }) {
+function KnownSequences({ onApplySequence }: { onApplySequence: (ops: RotationOp[]) => void }) {
   return (
     <div className="space-y-2">
       <p className="text-xs text-muted-foreground">
-        Apply known gate decompositions to verify equivalences. State resets before applying.
+        Apply known gate decompositions to the current state. Click twice to verify H&middot;H = I.
       </p>
       <div className="space-y-1.5">
         {KNOWN_EQUIVALENCES.map((seq) => (
@@ -177,10 +177,7 @@ function KnownSequences({ onApplySequence, onReset }: { onApplySequence: (ops: R
             key={seq.name}
             variant="ghost"
             className="w-full flex items-center justify-between gap-2 text-left"
-            onClick={() => {
-              onReset();
-              setTimeout(() => onApplySequence(seq.ops), 50);
-            }}
+            onClick={() => onApplySequence(seq.ops)}
             data-testid={`button-sequence-${seq.name}`}
           >
             <div className="flex-1 min-w-0">
@@ -249,7 +246,7 @@ export default function ControlPanel({
           <OperationHistory history={history} onClearHistory={onClearHistory} />
         </TabsContent>
         <TabsContent value="sequences" className="mt-3">
-          <KnownSequences onApplySequence={onApplySequence} onReset={onReset} />
+          <KnownSequences onApplySequence={onApplySequence} />
         </TabsContent>
       </Tabs>
     </div>

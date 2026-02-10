@@ -237,27 +237,48 @@ function StateVector({ coords }: { coords: BlochCoords }) {
 }
 
 function RotationRing({ axis, angle, visible }: { axis: "x" | "y" | "z"; angle: number; visible: boolean }) {
-  const points = useMemo(() => {
-    if (!visible || Math.abs(angle) < 0.01) return [];
+  const { points, arrowPos, arrowDir } = useMemo(() => {
+    if (!visible || Math.abs(angle) < 0.01) return { points: [], arrowPos: null, arrowDir: null };
     const steps = Math.max(16, Math.round(Math.abs(angle) / (Math.PI / 32)));
     const pts: THREE.Vector3[] = [];
     const r = 1.15;
+    const getPoint = (a: number): [number, number, number] => {
+      if (axis === "z") return [r * Math.cos(a), 0, r * Math.sin(a)];
+      if (axis === "x") return [0, r * Math.sin(a), r * Math.cos(a)];
+      return [r * Math.cos(a), -r * Math.sin(a), 0];
+    };
     for (let i = 0; i <= steps; i++) {
       const a = (i / steps) * angle;
-      let tx = 0, ty = 0, tz = 0;
-      if (axis === "z") { tx = r * Math.cos(a); tz = r * Math.sin(a); }
-      else if (axis === "x") { ty = r * Math.sin(a); tz = r * Math.cos(a); }
-      else { tx = r * Math.cos(a); ty = -r * Math.sin(a); }
+      const [tx, ty, tz] = getPoint(a);
       pts.push(new THREE.Vector3(tx, ty, tz));
     }
-    return pts;
+    const endPt = pts[pts.length - 1];
+    const eps = 0.001 * Math.sign(angle);
+    const [nx, ny, nz] = getPoint(angle + eps);
+    const tangent = new THREE.Vector3(nx - endPt.x, ny - endPt.y, nz - endPt.z).normalize();
+    return { points: pts, arrowPos: endPt, arrowDir: tangent };
   }, [axis, angle, visible]);
 
-  if (!visible || points.length < 2) return null;
+  if (!visible || points.length < 2 || !arrowPos || !arrowDir) return null;
 
   const colors: Record<string, string> = { x: "#ef4444", y: "#22c55e", z: "#3b82f6" };
+  const color = colors[axis];
 
-  return <Line points={points} color={colors[axis]} lineWidth={3} transparent opacity={0.7} />;
+  const arrowQuat = useMemo(() => {
+    const q = new THREE.Quaternion();
+    q.setFromUnitVectors(new THREE.Vector3(0, 1, 0), arrowDir);
+    return q;
+  }, [arrowDir]);
+
+  return (
+    <>
+      <Line points={points} color={color} lineWidth={3} transparent opacity={0.7} />
+      <mesh position={arrowPos} quaternion={arrowQuat}>
+        <coneGeometry args={[0.05, 0.15, 8]} />
+        <meshStandardMaterial color={color} emissive={color} emissiveIntensity={0.3} transparent opacity={0.8} />
+      </mesh>
+    </>
+  );
 }
 
 interface BlochSphereProps {

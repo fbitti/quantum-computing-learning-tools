@@ -53,14 +53,14 @@ export default function BlochSpherePage() {
   }, []);
 
   const handleApplySequence = useCallback((ops: RotationOp[]) => {
-    let state = identityQuat();
-    const newHistory: RotationOp[] = [];
-    for (const op of ops) {
-      state = applyRotation(state, op.axis, op.angle);
-      newHistory.push(op);
-    }
-    setQuatState(state);
-    setHistory(newHistory);
+    setQuatState(prev => {
+      let state = prev;
+      for (const op of ops) {
+        state = applyRotation(state, op.axis, op.angle);
+      }
+      return state;
+    });
+    setHistory(prev => [...prev, ...ops]);
     if (ops.length > 0) {
       const lastOp = ops[ops.length - 1];
       setActiveRotation({ axis: lastOp.axis, angle: lastOp.angle });
