@@ -74,6 +74,17 @@ function StateDisplay({ coords }: { coords: BlochCoords }) {
           <span className="font-mono" data-testid="text-phi">{formatAngle(coords.phi)}</span>
         </div>
       </div>
+
+      <div className="grid grid-cols-2 gap-2 text-xs">
+        <div className="bg-muted/50 rounded-md p-2 text-center">
+          <span className="text-muted-foreground block">Prob(|0&rang;)</span>
+          <span className="font-mono" data-testid="text-prob-0">{(Math.cos(coords.theta / 2) ** 2 * 100).toFixed(1)}%</span>
+        </div>
+        <div className="bg-muted/50 rounded-md p-2 text-center">
+          <span className="text-muted-foreground block">Prob(|1&rang;)</span>
+          <span className="font-mono" data-testid="text-prob-1">{(Math.sin(coords.theta / 2) ** 2 * 100).toFixed(1)}%</span>
+        </div>
+      </div>
     </div>
   );
 }
