@@ -21,6 +21,7 @@ function animateRotation(
   totalAngle: number,
   duration: number,
   onStep: (delta: number) => void,
+  onProgress?: (applied: number) => void,
 ): Promise<void> {
   return new Promise(resolve => {
     let applied = 0;
@@ -36,6 +37,7 @@ function animateRotation(
         onStep(delta);
       }
       applied = target;
+      onProgress?.(applied);
       if (t < 1) {
         requestAnimationFrame(step);
       } else {
@@ -76,9 +78,13 @@ export default function BlochSpherePage() {
   const handlePresetRotate = useCallback((axis: "x" | "y" | "z", angle: number, label: string) => {
     if (isAnimating) return;
     setIsAnimating(true);
-    animateRotation(axis, angle, ANIM_DURATION_MS, (delta) => {
-      setQuatState(prev => applyRotation(prev, axis, delta));
-    }).then(() => {
+    setActiveRotation({ axis, angle: 0 });
+    animateRotation(
+      axis, angle, ANIM_DURATION_MS,
+      (delta) => setQuatState(prev => applyRotation(prev, axis, delta)),
+      (applied) => setActiveRotation({ axis, angle: applied }),
+    ).then(() => {
+      setActiveRotation(null);
       setHistory(prev => [...prev, { axis, angle, label }]);
       setIsAnimating(false);
     });
@@ -102,9 +108,13 @@ export default function BlochSpherePage() {
     setIsAnimating(true);
     (async () => {
       for (const op of ops) {
-        await animateRotation(op.axis, op.angle, ANIM_DURATION_MS, (delta) => {
-          setQuatState(prev => applyRotation(prev, op.axis, delta));
-        });
+        setActiveRotation({ axis: op.axis, angle: 0 });
+        await animateRotation(
+          op.axis, op.angle, ANIM_DURATION_MS,
+          (delta) => setQuatState(prev => applyRotation(prev, op.axis, delta)),
+          (applied) => setActiveRotation({ axis: op.axis, angle: applied }),
+        );
+        setActiveRotation(null);
         setHistory(prev => [...prev, op]);
         await new Promise(r => setTimeout(r, 100));
       }
