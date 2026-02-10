@@ -213,18 +213,18 @@ function StateVector({ coords }: { coords: BlochCoords }) {
 
   return (
     <group ref={groupRef}>
-      <mesh position={[0, 0.5, 0]}>
-        <cylinderGeometry args={[0.018, 0.018, 1, 8]} />
+      <mesh position={[0, 0.43, 0]}>
+        <cylinderGeometry args={[0.018, 0.018, 0.86, 8]} />
         <meshStandardMaterial color="#f59e0b" emissive="#f59e0b" emissiveIntensity={0.4} />
       </mesh>
 
-      <mesh position={[0, 1.06, 0]}>
+      <mesh position={[0, 0.93, 0]}>
         <coneGeometry args={[0.05, 0.14, 12]} />
         <meshStandardMaterial color="#f59e0b" emissive="#f59e0b" emissiveIntensity={0.5} />
       </mesh>
 
-      <mesh ref={glowRef} position={[0, 1.13, 0]}>
-        <sphereGeometry args={[0.055, 16, 16]} />
+      <mesh ref={glowRef} position={[0, 1.0, 0]}>
+        <sphereGeometry args={[0.045, 16, 16]} />
         <meshStandardMaterial color="#fbbf24" emissive="#fbbf24" emissiveIntensity={1} transparent opacity={0.5} />
       </mesh>
 
