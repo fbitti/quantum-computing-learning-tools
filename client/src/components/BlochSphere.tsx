@@ -124,6 +124,36 @@ function AxisEndpoint({ position, color }: { position: [number, number, number];
   );
 }
 
+function DashedAxis({ start, end, color }: { start: [number, number, number]; end: [number, number, number]; color: string }) {
+  const ref = useRef<THREE.LineSegments>(null);
+  const geom = useMemo(() => {
+    const g = new THREE.BufferGeometry().setFromPoints([
+      new THREE.Vector3(...start),
+      new THREE.Vector3(...end),
+    ]);
+    return g;
+  }, [start, end]);
+
+  const mat = useMemo(() => {
+    return new THREE.LineDashedMaterial({
+      color,
+      dashSize: 0.06,
+      gapSize: 0.04,
+      transparent: true,
+      opacity: 0.8,
+    });
+  }, [color]);
+
+  useFrame(() => {
+    if (ref.current && !ref.current.userData.computed) {
+      ref.current.computeLineDistances();
+      ref.current.userData.computed = true;
+    }
+  });
+
+  return <lineSegments ref={ref} geometry={geom} material={mat} />;
+}
+
 function Axes() {
   const axisLength = 1.35;
   const axisColorX = "#ef4444";
@@ -133,9 +163,9 @@ function Axes() {
 
   return (
     <>
-      <Line points={[[-axisLength, 0, 0], [axisLength, 0, 0]]} color={axisColorX} lineWidth={1.5} transparent opacity={0.8} />
-      <Line points={[[0, 0, -axisLength], [0, 0, axisLength]]} color={axisColorY} lineWidth={1.5} transparent opacity={0.8} />
-      <Line points={[[0, -axisLength, 0], [0, axisLength, 0]]} color={axisColorZ} lineWidth={1.5} transparent opacity={0.8} />
+      <DashedAxis start={[-axisLength, 0, 0]} end={[axisLength, 0, 0]} color={axisColorX} />
+      <DashedAxis start={[0, 0, -axisLength]} end={[0, 0, axisLength]} color={axisColorY} />
+      <DashedAxis start={[0, -axisLength, 0]} end={[0, axisLength, 0]} color={axisColorZ} />
 
       <AxisEndpoint position={[axisLength, 0, 0]} color={axisColorX} />
       <AxisEndpoint position={[-axisLength, 0, 0]} color={axisColorX} />
