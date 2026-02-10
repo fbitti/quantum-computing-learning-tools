@@ -53,7 +53,7 @@ function GreatCircles() {
     const pts: THREE.Vector3[] = [];
     for (let i = 0; i <= 64; i++) {
       const a = (i / 64) * Math.PI * 2;
-      pts.push(new THREE.Vector3(Math.cos(a), Math.sin(a), 0));
+      pts.push(new THREE.Vector3(Math.cos(a), 0, Math.sin(a)));
     }
     return pts;
   }, []);
@@ -62,7 +62,7 @@ function GreatCircles() {
     const pts: THREE.Vector3[] = [];
     for (let i = 0; i <= 64; i++) {
       const a = (i / 64) * Math.PI * 2;
-      pts.push(new THREE.Vector3(Math.cos(a), 0, Math.sin(a)));
+      pts.push(new THREE.Vector3(Math.cos(a), Math.sin(a), 0));
     }
     return pts;
   }, []);
@@ -71,7 +71,7 @@ function GreatCircles() {
     const pts: THREE.Vector3[] = [];
     for (let i = 0; i <= 64; i++) {
       const a = (i / 64) * Math.PI * 2;
-      pts.push(new THREE.Vector3(0, Math.cos(a), Math.sin(a)));
+      pts.push(new THREE.Vector3(0, Math.sin(a), Math.cos(a)));
     }
     return pts;
   }, []);
@@ -124,15 +124,15 @@ function Axes() {
   return (
     <>
       <Line points={[[-axisLength, 0, 0], [axisLength, 0, 0]]} color={axisColorX} lineWidth={1.5} transparent opacity={0.6} />
-      <Line points={[[0, -axisLength, 0], [0, axisLength, 0]]} color={axisColorY} lineWidth={1.5} transparent opacity={0.6} />
-      <Line points={[[0, 0, -axisLength], [0, 0, axisLength]]} color={axisColorZ} lineWidth={1.5} transparent opacity={0.6} />
+      <Line points={[[0, 0, -axisLength], [0, 0, axisLength]]} color={axisColorY} lineWidth={1.5} transparent opacity={0.6} />
+      <Line points={[[0, -axisLength, 0], [0, axisLength, 0]]} color={axisColorZ} lineWidth={1.5} transparent opacity={0.6} />
 
       <AxisLabel position={[labelOffset, 0, 0]} text="X  |+>" color={axisColorX} />
       <AxisLabel position={[-labelOffset, 0, 0]} text="-X  |->" color={axisColorX} />
-      <AxisLabel position={[0, labelOffset, 0]} text="Y  |i>" color={axisColorY} />
-      <AxisLabel position={[0, -labelOffset, 0]} text="-Y  |-i>" color={axisColorY} />
-      <AxisLabel position={[0, 0, labelOffset]} text="Z  |0>" color={axisColorZ} />
-      <AxisLabel position={[0, 0, -labelOffset]} text="-Z  |1>" color={axisColorZ} />
+      <AxisLabel position={[0, 0, labelOffset]} text="Y  |i>" color={axisColorY} />
+      <AxisLabel position={[0, 0, -labelOffset]} text="-Y  |-i>" color={axisColorY} />
+      <AxisLabel position={[0, labelOffset, 0]} text="Z  |0>" color={axisColorZ} />
+      <AxisLabel position={[0, -labelOffset, 0]} text="-Z  |1>" color={axisColorZ} />
     </>
   );
 }
@@ -151,8 +151,8 @@ function StateVector({ coords }: { coords: BlochCoords }) {
     if (!groupRef.current) return;
 
     const { x, y, z } = currentRef.current;
-    const dir = new THREE.Vector3(x, y, z).normalize();
-    const up = new THREE.Vector3(0, 0, 1);
+    const dir = new THREE.Vector3(x, z, y).normalize();
+    const up = new THREE.Vector3(0, 1, 0);
 
     const quaternion = new THREE.Quaternion();
     quaternion.setFromUnitVectors(up, dir);
@@ -166,23 +166,23 @@ function StateVector({ coords }: { coords: BlochCoords }) {
 
   return (
     <group ref={groupRef}>
-      <mesh>
+      <mesh position={[0, 0.5, 0]}>
         <cylinderGeometry args={[0.018, 0.018, 1, 8]} />
         <meshStandardMaterial color="#f59e0b" emissive="#f59e0b" emissiveIntensity={0.4} />
       </mesh>
 
-      <mesh position={[0, 0.56, 0]} rotation={[0, 0, 0]}>
+      <mesh position={[0, 1.06, 0]}>
         <coneGeometry args={[0.05, 0.14, 12]} />
         <meshStandardMaterial color="#f59e0b" emissive="#f59e0b" emissiveIntensity={0.5} />
       </mesh>
 
-      <mesh ref={glowRef} position={[0, 0.63, 0]}>
+      <mesh ref={glowRef} position={[0, 1.13, 0]}>
         <sphereGeometry args={[0.055, 16, 16]} />
         <meshStandardMaterial color="#fbbf24" emissive="#fbbf24" emissiveIntensity={1} transparent opacity={0.5} />
       </mesh>
 
-      <mesh position={[0, -0.5, 0]}>
-        <sphereGeometry args={[0.025, 12, 12]} />
+      <mesh position={[0, 0, 0]}>
+        <sphereGeometry args={[0.035, 12, 12]} />
         <meshStandardMaterial color="#f59e0b" emissive="#f59e0b" emissiveIntensity={0.3} transparent opacity={0.6} />
       </mesh>
     </group>
@@ -197,11 +197,11 @@ function RotationRing({ axis, angle, visible }: { axis: "x" | "y" | "z"; angle: 
     const r = 1.15;
     for (let i = 0; i <= steps; i++) {
       const a = (i / steps) * angle;
-      let x = 0, y = 0, z = 0;
-      if (axis === "z") { x = r * Math.cos(a); y = r * Math.sin(a); }
-      else if (axis === "x") { y = r * Math.cos(a); z = r * Math.sin(a); }
-      else { x = r * Math.cos(a); z = r * Math.sin(a); }
-      pts.push(new THREE.Vector3(x, y, z));
+      let tx = 0, ty = 0, tz = 0;
+      if (axis === "z") { tx = r * Math.cos(a); tz = r * Math.sin(a); }
+      else if (axis === "x") { ty = r * Math.sin(a); tz = r * Math.cos(a); }
+      else { tx = r * Math.cos(a); ty = r * Math.sin(a); }
+      pts.push(new THREE.Vector3(tx, ty, tz));
     }
     return pts;
   }, [axis, angle, visible]);
@@ -300,7 +300,7 @@ export default function BlochSphereCanvas({ coords, activeRotation }: BlochSpher
     <WebGLErrorBoundary fallback={<Fallback2D coords={coords} />}>
       <div className="w-full h-full" data-testid="bloch-sphere-canvas">
         <Canvas
-          camera={{ position: [2.2, 1.5, 2.2], fov: 45 }}
+          camera={{ position: [2.5, 1.8, 2.5], fov: 42 }}
           style={{ background: "transparent" }}
           gl={{ alpha: true, antialias: true }}
         >
