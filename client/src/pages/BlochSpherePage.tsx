@@ -57,6 +57,7 @@ export default function BlochSpherePage() {
   const [resetKey, setResetKey] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
+  const [crankOffsets, setCrankOffsets] = useState({ x: 0, y: 0, z: 0 });
   const accumRef = useRef({ x: 0, y: 0, z: 0 });
 
   const coords = quatToBloch(quatState);
@@ -78,16 +79,21 @@ export default function BlochSpherePage() {
     if (isAnimating) return;
     setIsAnimating(true);
     setActiveRotation({ axis, angle: 0 });
+    const startOffset = crankOffsets[axis];
     animateRotation(
       axis, angle, ANIM_DURATION_MS,
       (delta) => setQuatState(prev => applyRotation(prev, axis, delta)),
-      (applied) => setActiveRotation({ axis, angle: applied }),
+      (applied) => {
+        setActiveRotation({ axis, angle: applied });
+        setCrankOffsets(prev => ({ ...prev, [axis]: startOffset + applied }));
+      },
     ).then(() => {
       setActiveRotation(null);
+      setCrankOffsets(prev => ({ ...prev, [axis]: startOffset + angle }));
       setHistory(prev => [...prev, { axis, angle, label }]);
       setIsAnimating(false);
     });
-  }, [isAnimating]);
+  }, [isAnimating, crankOffsets]);
 
   const handleReset = useCallback(() => {
     setQuatState(identityQuat());
@@ -95,6 +101,7 @@ export default function BlochSpherePage() {
     setActiveRotation(null);
     setResetKey(k => k + 1);
     accumRef.current = { x: 0, y: 0, z: 0 };
+    setCrankOffsets({ x: 0, y: 0, z: 0 });
     setIsAnimating(false);
   }, []);
 
@@ -107,19 +114,24 @@ export default function BlochSpherePage() {
     setIsAnimating(true);
     (async () => {
       for (const op of ops) {
+        const startOffset = crankOffsets[op.axis];
         setActiveRotation({ axis: op.axis, angle: 0 });
         await animateRotation(
           op.axis, op.angle, ANIM_DURATION_MS,
           (delta) => setQuatState(prev => applyRotation(prev, op.axis, delta)),
-          (applied) => setActiveRotation({ axis: op.axis, angle: applied }),
+          (applied) => {
+            setActiveRotation({ axis: op.axis, angle: applied });
+            setCrankOffsets(prev => ({ ...prev, [op.axis]: startOffset + applied }));
+          },
         );
+        setCrankOffsets(prev => ({ ...prev, [op.axis]: startOffset + op.angle }));
         setActiveRotation(null);
         setHistory(prev => [...prev, op]);
         await new Promise(r => setTimeout(r, 100));
       }
       setIsAnimating(false);
     })();
-  }, [isAnimating]);
+  }, [isAnimating, crankOffsets]);
 
   return (
     <div className="flex flex-col h-[100dvh] w-full bg-background overflow-hidden">
@@ -174,6 +186,7 @@ export default function BlochSpherePage() {
             onClearHistory={handleClearHistory}
             onApplySequence={handleApplySequence}
             resetKey={resetKey}
+            crankOffsets={crankOffsets}
           />
         </div>
       </div>

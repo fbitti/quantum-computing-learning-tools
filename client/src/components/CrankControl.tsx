@@ -9,18 +9,21 @@ interface CrankControlProps {
   onRotateEnd: (totalAngle: number) => void;
   label: string;
   resetKey?: number;
+  externalAngle?: number;
 }
 
-export default function CrankControl({ axis, color, onRotate, onRotateEnd, label, resetKey = 0 }: CrankControlProps) {
+export default function CrankControl({ axis, color, onRotate, onRotateEnd, label, resetKey = 0, externalAngle = 0 }: CrankControlProps) {
   const crankRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
-  const [crankAngle, setCrankAngle] = useState(0);
+  const [dragAngle, setDragAngle] = useState(0);
   const lastAngleRef = useRef(0);
   const accumulatedRef = useRef(0);
   useEffect(() => {
-    setCrankAngle(0);
+    setDragAngle(0);
     accumulatedRef.current = 0;
   }, [resetKey]);
+
+  const crankAngle = dragAngle + externalAngle;
 
   const getCrankAngle = useCallback((clientX: number, clientY: number) => {
     if (!crankRef.current) return 0;
@@ -49,7 +52,7 @@ export default function CrankControl({ axis, color, onRotate, onRotateEnd, label
     if (delta < -Math.PI) delta += 2 * Math.PI;
 
     accumulatedRef.current += delta;
-    setCrankAngle(prev => prev + delta);
+    setDragAngle(prev => prev + delta);
     lastAngleRef.current = currentAngle;
 
     onRotate(delta);
