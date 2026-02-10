@@ -38,7 +38,7 @@ function Sphere() {
 function WireframeSphere() {
   return (
     <mesh>
-      <sphereGeometry args={[1.001, 32, 32]} />
+      <sphereGeometry args={[1.001, 16, 12]} />
       <meshBasicMaterial
         color="#6699cc"
         wireframe
