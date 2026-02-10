@@ -14,6 +14,7 @@ export default function BlochSpherePage() {
   const [quatState, setQuatState] = useState<QuaternionState>(identityQuat());
   const [history, setHistory] = useState<RotationOp[]>([]);
   const [activeRotation, setActiveRotation] = useState<{ axis: "x" | "y" | "z"; angle: number } | null>(null);
+  const [resetKey, setResetKey] = useState(0);
   const accumRef = useRef({ x: 0, y: 0, z: 0 });
 
   const coords = quatToBloch(quatState);
@@ -43,6 +44,7 @@ export default function BlochSpherePage() {
     setQuatState(identityQuat());
     setHistory([]);
     setActiveRotation(null);
+    setResetKey(k => k + 1);
     accumRef.current = { x: 0, y: 0, z: 0 };
   }, []);
 
@@ -100,6 +102,7 @@ export default function BlochSpherePage() {
           onReset={handleReset}
           onClearHistory={handleClearHistory}
           onApplySequence={handleApplySequence}
+          resetKey={resetKey}
         />
       </div>
     </div>

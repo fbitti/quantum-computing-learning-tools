@@ -1,4 +1,4 @@
-import { useRef, useState, useCallback } from "react";
+import { useRef, useState, useCallback, useEffect } from "react";
 import { RotateCw } from "lucide-react";
 import { formatAngle } from "@/lib/quantum";
 
@@ -8,14 +8,19 @@ interface CrankControlProps {
   onRotate: (angle: number) => void;
   onRotateEnd: (totalAngle: number) => void;
   label: string;
+  resetKey?: number;
 }
 
-export default function CrankControl({ axis, color, onRotate, onRotateEnd, label }: CrankControlProps) {
+export default function CrankControl({ axis, color, onRotate, onRotateEnd, label, resetKey = 0 }: CrankControlProps) {
   const crankRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [crankAngle, setCrankAngle] = useState(0);
   const lastAngleRef = useRef(0);
   const accumulatedRef = useRef(0);
+  useEffect(() => {
+    setCrankAngle(0);
+    accumulatedRef.current = 0;
+  }, [resetKey]);
 
   const getCrankAngle = useCallback((clientX: number, clientY: number) => {
     if (!crankRef.current) return 0;

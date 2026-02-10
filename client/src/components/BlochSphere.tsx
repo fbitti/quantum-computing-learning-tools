@@ -26,6 +26,7 @@ function Sphere() {
         color="#4488cc"
         transparent
         opacity={0.08}
+        depthWrite={false}
         side={THREE.DoubleSide}
         roughness={0.3}
         metalness={0.1}
@@ -114,6 +115,15 @@ function AxisLabel({ position, text, color }: { position: [number, number, numbe
   );
 }
 
+function AxisEndpoint({ position, color }: { position: [number, number, number]; color: string }) {
+  return (
+    <mesh position={position}>
+      <sphereGeometry args={[0.04, 12, 12]} />
+      <meshStandardMaterial color={color} emissive={color} emissiveIntensity={0.3} />
+    </mesh>
+  );
+}
+
 function Axes() {
   const axisLength = 1.35;
   const axisColorX = "#ef4444";
@@ -123,9 +133,16 @@ function Axes() {
 
   return (
     <>
-      <Line points={[[-axisLength, 0, 0], [axisLength, 0, 0]]} color={axisColorX} lineWidth={1.5} transparent opacity={0.6} />
-      <Line points={[[0, 0, -axisLength], [0, 0, axisLength]]} color={axisColorY} lineWidth={1.5} transparent opacity={0.6} />
-      <Line points={[[0, -axisLength, 0], [0, axisLength, 0]]} color={axisColorZ} lineWidth={1.5} transparent opacity={0.6} />
+      <Line points={[[-axisLength, 0, 0], [axisLength, 0, 0]]} color={axisColorX} lineWidth={1.5} transparent opacity={0.8} />
+      <Line points={[[0, 0, -axisLength], [0, 0, axisLength]]} color={axisColorY} lineWidth={1.5} transparent opacity={0.8} />
+      <Line points={[[0, -axisLength, 0], [0, axisLength, 0]]} color={axisColorZ} lineWidth={1.5} transparent opacity={0.8} />
+
+      <AxisEndpoint position={[axisLength, 0, 0]} color={axisColorX} />
+      <AxisEndpoint position={[-axisLength, 0, 0]} color={axisColorX} />
+      <AxisEndpoint position={[0, 0, axisLength]} color={axisColorY} />
+      <AxisEndpoint position={[0, 0, -axisLength]} color={axisColorY} />
+      <AxisEndpoint position={[0, axisLength, 0]} color={axisColorZ} />
+      <AxisEndpoint position={[0, -axisLength, 0]} color={axisColorZ} />
 
       <AxisLabel position={[labelOffset, 0, 0]} text="X  |+>" color={axisColorX} />
       <AxisLabel position={[-labelOffset, 0, 0]} text="-X  |->" color={axisColorX} />
@@ -200,7 +217,7 @@ function RotationRing({ axis, angle, visible }: { axis: "x" | "y" | "z"; angle: 
       let tx = 0, ty = 0, tz = 0;
       if (axis === "z") { tx = r * Math.cos(a); tz = r * Math.sin(a); }
       else if (axis === "x") { ty = r * Math.sin(a); tz = r * Math.cos(a); }
-      else { tx = r * Math.cos(a); ty = r * Math.sin(a); }
+      else { tx = r * Math.cos(a); ty = -r * Math.sin(a); }
       pts.push(new THREE.Vector3(tx, ty, tz));
     }
     return pts;

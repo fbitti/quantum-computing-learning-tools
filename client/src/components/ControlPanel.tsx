@@ -24,6 +24,7 @@ interface ControlPanelProps {
   onReset: () => void;
   onClearHistory: () => void;
   onApplySequence: (ops: RotationOp[]) => void;
+  resetKey?: number;
 }
 
 function StateDisplay({ coords }: { coords: BlochCoords }) {
@@ -205,6 +206,7 @@ export default function ControlPanel({
   onReset,
   onClearHistory,
   onApplySequence,
+  resetKey = 0,
 }: ControlPanelProps) {
   return (
     <div className="flex flex-col gap-4 h-full overflow-y-auto p-4">
@@ -226,9 +228,9 @@ export default function ControlPanel({
           Drag to rotate the state vector around each axis. Each crank turns the Bloch sphere like a physical rotation gate.
         </p>
         <div className="flex justify-center gap-4 flex-wrap">
-          <CrankControl axis="x" color="#ef4444" onRotate={(a) => onRotate("x", a)} onRotateEnd={(a) => onRotateEnd("x", a)} label="(X-axis)" />
-          <CrankControl axis="y" color="#22c55e" onRotate={(a) => onRotate("y", a)} onRotateEnd={(a) => onRotateEnd("y", a)} label="(Y-axis)" />
-          <CrankControl axis="z" color="#3b82f6" onRotate={(a) => onRotate("z", a)} onRotateEnd={(a) => onRotateEnd("z", a)} label="(Z-axis)" />
+          <CrankControl axis="x" color="#ef4444" onRotate={(a) => onRotate("x", a)} onRotateEnd={(a) => onRotateEnd("x", a)} label="(X-axis)" resetKey={resetKey} />
+          <CrankControl axis="y" color="#22c55e" onRotate={(a) => onRotate("y", a)} onRotateEnd={(a) => onRotateEnd("y", a)} label="(Y-axis)" resetKey={resetKey} />
+          <CrankControl axis="z" color="#3b82f6" onRotate={(a) => onRotate("z", a)} onRotateEnd={(a) => onRotateEnd("z", a)} label="(Z-axis)" resetKey={resetKey} />
         </div>
       </div>
 
