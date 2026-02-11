@@ -224,10 +224,6 @@ export default function ControlPanel({
 }: ControlPanelProps) {
   return (
     <div className="flex flex-col gap-4 h-full overflow-y-auto p-4">
-      <StateDisplay coords={coords} />
-
-      <Separator />
-
       <div>
         <h3 className="text-sm font-semibold mb-3">Rotation Cranks</h3>
         <p className="text-xs text-muted-foreground mb-3">
@@ -239,6 +235,10 @@ export default function ControlPanel({
           <CrankControl axis="z" color="#3b82f6" onRotate={(a) => onRotate("z", a)} onRotateEnd={(a) => onRotateEnd("z", a)} label="(Z-axis)" resetKey={resetKey} externalAngle={crankOffsets.z} />
         </div>
       </div>
+
+      <Separator />
+
+      <StateDisplay coords={coords} />
 
       <Separator />
 
