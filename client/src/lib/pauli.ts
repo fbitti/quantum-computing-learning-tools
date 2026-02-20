@@ -99,15 +99,18 @@ export function randomChallenge(includePhases: boolean): {
   return { p1, p0, phase, matrix: buildMatrix(p1, p0, phase) };
 }
 
-const PAULI_HINTS: Record<PauliLabel, (qubit: string) => string> = {
-  I: (q) =>
-    `${q} has no bit or phase flips — the 2×2 block is the identity. The correct answer is I.`,
-  X: (q) =>
-    `${q} has a bit flip — notice the off-diagonal 1s in its 2×2 block, meaning positions are swapped. The correct answer is X.`,
-  Y: (q) =>
-    `${q} has a bit and phase flip — notice the off-diagonal ±i values in its 2×2 block. The correct answer is Y.`,
-  Z: (q) =>
-    `${q} has a phase flip — the diagonal entries have opposite signs (+1 and −1) in its 2×2 block. The correct answer is Z.`,
+const PAULI_HINTS_Q1: Record<PauliLabel, string> = {
+  I: "Qubit 1 is I (identity) — the non-zero values stay within the top-left and bottom-right quadrants (on the block diagonal).",
+  X: "Qubit 1 is X (bit flip) — the non-zero values are in the top-right and bottom-left quadrants (off the block diagonal).",
+  Y: "Qubit 1 is Y (bit + phase flip) — values appear in the off-diagonal quadrants, and include an imaginary factor from the Y gate.",
+  Z: "Qubit 1 is Z (phase flip) — values stay on the block diagonal (same quadrants as I), but the bottom-right quadrant has opposite signs.",
+};
+
+const PAULI_HINTS_Q0: Record<PauliLabel, string> = {
+  I: "Qubit 0 is I (identity) — within each quadrant, values sit on the diagonal (top-left and bottom-right positions).",
+  X: "Qubit 0 is X (bit flip) — within each quadrant, values sit off the diagonal (top-right and bottom-left positions).",
+  Y: "Qubit 0 is Y (bit + phase flip) — within each quadrant, values are off-diagonal and imaginary (±i).",
+  Z: "Qubit 0 is Z (phase flip) — within each quadrant, values are on the diagonal but with opposite signs.",
 };
 
 export function buildExplanation(
@@ -121,10 +124,10 @@ export function buildExplanation(
   const parts: string[] = [];
 
   if (guessP1 !== correctP1) {
-    parts.push(PAULI_HINTS[correctP1]("Qubit 1"));
+    parts.push(PAULI_HINTS_Q1[correctP1]);
   }
   if (guessP0 !== correctP0) {
-    parts.push(PAULI_HINTS[correctP0]("Qubit 0"));
+    parts.push(PAULI_HINTS_Q0[correctP0]);
   }
   if (guessPhase !== correctPhase) {
     parts.push(

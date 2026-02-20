@@ -15,22 +15,50 @@ import {
   PAULI_LABELS,
 } from "@/lib/pauli";
 
-function MatrixDisplay({ matrix }: { matrix: Matrix4x4 }) {
+function MatrixDisplay({
+  matrix,
+  highlight,
+}: {
+  matrix: Matrix4x4;
+  highlight?: { p1Wrong: boolean; p0Wrong: boolean };
+}) {
+  const quadrant = (r: number, c: number) => {
+    if (r < 2 && c < 2) return "TL";
+    if (r < 2 && c >= 2) return "TR";
+    if (r >= 2 && c < 2) return "BL";
+    return "BR";
+  };
+
   return (
-    <div className="grid grid-cols-4 gap-1 w-fit mx-auto" data-testid="matrix-display">
-      {matrix.map((row, r) =>
-        row.map((cell, c) => (
-          <div
-            key={`${r}-${c}`}
-            className="w-14 h-14 sm:w-16 sm:h-16 rounded-md border border-border bg-card flex items-center justify-center text-sm font-mono font-semibold"
-            data-testid={`matrix-cell-${r}-${c}`}
-          >
-            {!isZero(cell) && (
-              <span>{formatComplex(cell)}</span>
-            )}
-          </div>
-        ))
-      )}
+    <div className="flex flex-col gap-2 w-fit mx-auto" data-testid="matrix-display">
+      {[0, 1, 2, 3].map((r) => (
+        <div key={r} className={`flex gap-1 ${r === 2 ? "mt-1" : ""}`}>
+          {[0, 1, 2, 3].map((c) => {
+            const cell = matrix[r][c];
+            const nonZero = !isZero(cell);
+            const showHL = highlight && nonZero;
+            let hlClass = "";
+            if (showHL) {
+              hlClass = "bg-primary/15 border-primary/40";
+            }
+            const q = quadrant(r, c);
+            const quadrantLabel =
+              q === "TL" ? "Q₁" : q === "TR" ? "Q₂" : q === "BL" ? "Q₃" : "Q₄";
+            return (
+              <div
+                key={`${r}-${c}`}
+                className={`w-14 h-14 sm:w-16 sm:h-16 rounded-md border flex items-center justify-center text-sm font-mono font-semibold ${
+                  hlClass || "border-border bg-card"
+                } ${c === 2 ? "ml-2" : ""}`}
+                data-testid={`matrix-cell-${r}-${c}`}
+                title={`${quadrantLabel} [${r},${c}]`}
+              >
+                {nonZero && <span>{formatComplex(cell)}</span>}
+              </div>
+            );
+          })}
+        </div>
+      ))}
     </div>
   );
 }
@@ -202,7 +230,17 @@ export default function PauliTrainerPage() {
       <div className="flex-1 overflow-y-auto">
         <div className="max-w-3xl mx-auto px-4 py-6 flex flex-col lg:flex-row gap-8 items-start justify-center">
           <div className="flex flex-col items-center gap-4 flex-shrink-0">
-            <MatrixDisplay matrix={challenge.matrix} />
+            <MatrixDisplay
+              matrix={challenge.matrix}
+              highlight={
+                checked && !correct
+                  ? {
+                      p1Wrong: guessP1 !== challenge.p1,
+                      p0Wrong: guessP0 !== challenge.p0,
+                    }
+                  : undefined
+              }
+            />
             <div className="flex items-center gap-2">
               <Switch
                 id="phase-toggle"
