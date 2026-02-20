@@ -1,16 +1,37 @@
 import { Link, useLocation } from "wouter";
-import { Atom, Grid3X3, Home, Info, Mail, Shield, Menu, X } from "lucide-react";
+import { Atom, Grid3X3, Home, Info, Mail, Shield, Menu, X, ChevronDown, Wrench } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+
+const tools = [
+  { href: "/bloch-sphere", label: "Bloch Sphere", icon: Atom },
+  { href: "/pauli-trainer", label: "Pauli Trainer", icon: Grid3X3 },
+];
 
 const navLinks = [
   { href: "/", label: "Home", icon: Home },
-  { href: "/bloch-sphere", label: "Bloch Sphere", icon: Atom },
-  { href: "/pauli-trainer", label: "Pauli Trainer", icon: Grid3X3 },
   { href: "/about", label: "About", icon: Info },
   { href: "/newsletter", label: "Newsletter", icon: Mail },
   { href: "/policies", label: "Policies", icon: Shield },
 ];
+
+const allMobileLinks = [
+  { href: "/", label: "Home", icon: Home },
+  ...tools,
+  { href: "/about", label: "About", icon: Info },
+  { href: "/newsletter", label: "Newsletter", icon: Mail },
+  { href: "/policies", label: "Policies", icon: Shield },
+];
+
+function isToolRoute(location: string) {
+  return tools.some((t) => t.href === location);
+}
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const [location] = useLocation();
@@ -26,7 +47,46 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         </Link>
 
         <nav className="hidden md:flex items-center gap-1" data-testid="nav-desktop">
-          {navLinks.map(({ href, label }) => (
+          <Link href="/">
+            <Button
+              variant={location === "/" ? "secondary" : "ghost"}
+              size="sm"
+              className="text-xs"
+              data-testid="nav-home"
+            >
+              Home
+            </Button>
+          </Link>
+
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant={isToolRoute(location) ? "secondary" : "ghost"}
+                size="sm"
+                className="text-xs gap-1"
+                data-testid="nav-tools"
+              >
+                <Wrench className="w-3 h-3" />
+                Tools
+                <ChevronDown className="w-3 h-3" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" data-testid="nav-tools-dropdown">
+              {tools.map(({ href, label, icon: Icon }) => (
+                <Link key={href} href={href}>
+                  <DropdownMenuItem
+                    className={`cursor-pointer gap-2 text-xs ${location === href ? "bg-secondary" : ""}`}
+                    data-testid={`nav-tool-${label.toLowerCase().replace(/\s+/g, "-")}`}
+                  >
+                    <Icon className="w-3.5 h-3.5" />
+                    {label}
+                  </DropdownMenuItem>
+                </Link>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          {navLinks.slice(1).map(({ href, label }) => (
             <Link key={href} href={href}>
               <Button
                 variant={location === href ? "secondary" : "ghost"}
@@ -53,12 +113,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
       {mobileMenuOpen && (
         <div className="md:hidden border-b border-border bg-card/80 px-4 py-2 flex flex-col gap-1 flex-shrink-0 z-40" data-testid="nav-mobile">
-          {navLinks.map(({ href, label, icon: Icon }) => (
+          {allMobileLinks.map(({ href, label, icon: Icon }) => (
             <Link key={href} href={href} onClick={() => setMobileMenuOpen(false)}>
               <Button
                 variant={location === href ? "secondary" : "ghost"}
                 size="sm"
-                className="w-full justify-start text-xs gap-2"
+                className={`w-full justify-start text-xs gap-2 ${tools.some(t => t.href === href) ? "pl-8" : ""}`}
                 data-testid={`nav-mobile-${label.toLowerCase().replace(/\s+/g, "-")}`}
               >
                 <Icon className="w-3.5 h-3.5" />
