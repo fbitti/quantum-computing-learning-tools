@@ -19,7 +19,9 @@ Multi-tool platform for quantum computing education. Features interactive tools 
 - `client/src/pages/AboutPage.tsx` - Placeholder about page
 - `client/src/pages/NewsletterPage.tsx` - Placeholder newsletter page
 - `client/src/pages/PoliciesPage.tsx` - Placeholder policies page
+- `client/src/pages/PauliTrainerPage.tsx` - Pauli Trainer tool (matrix identification game)
 - `client/src/lib/quantum.ts` - Quaternion math, Bloch coordinates, formatting utilities
+- `client/src/lib/pauli.ts` - Pauli matrices, tensor products, global phases, explanations
 - `client/src/components/BlochSphere.tsx` - Three.js 3D Bloch sphere canvas
 - `client/src/components/CrankControl.tsx` - Drag-to-rotate crank UI
 - `client/src/components/ControlPanel.tsx` - All controls: state display, presets, history, gate sequences

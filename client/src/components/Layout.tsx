@@ -1,11 +1,12 @@
 import { Link, useLocation } from "wouter";
-import { Atom, Home, Info, Mail, Shield, Menu, X } from "lucide-react";
+import { Atom, Grid3X3, Home, Info, Mail, Shield, Menu, X } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 
 const navLinks = [
   { href: "/", label: "Home", icon: Home },
   { href: "/bloch-sphere", label: "Bloch Sphere", icon: Atom },
+  { href: "/pauli-trainer", label: "Pauli Trainer", icon: Grid3X3 },
   { href: "/about", label: "About", icon: Info },
   { href: "/newsletter", label: "Newsletter", icon: Mail },
   { href: "/policies", label: "Policies", icon: Shield },

@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { Link } from "wouter";
-import { Atom, Wrench } from "lucide-react";
+import { Atom, Grid3X3, Wrench } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
@@ -11,6 +11,14 @@ const tools = [
     description: "Visualize qubit states on a 3D Bloch sphere. Apply Rx, Ry, and Rz rotation gates using interactive drag-to-rotate cranks and preset quantum angle buttons.",
     icon: Atom,
     href: "/bloch-sphere",
+    available: true,
+  },
+  {
+    id: "pauli-trainer",
+    title: "Pauli Trainer",
+    description: "Practice identifying two-qubit Pauli operators from their 4×4 matrix representation. Toggle global phases for an extra challenge.",
+    icon: Grid3X3,
+    href: "/pauli-trainer",
     available: true,
   },
   {
