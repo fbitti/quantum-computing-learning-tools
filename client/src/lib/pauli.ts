@@ -99,11 +99,15 @@ export function randomChallenge(includePhases: boolean): {
   return { p1, p0, phase, matrix: buildMatrix(p1, p0, phase) };
 }
 
-const PAULI_DESCRIPTIONS: Record<PauliLabel, string> = {
-  I: "no operation (identity)",
-  X: "a bit flip",
-  Y: "a bit and phase flip",
-  Z: "a phase flip",
+const PAULI_HINTS: Record<PauliLabel, (qubit: string) => string> = {
+  I: (q) =>
+    `${q} has no bit or phase flips — the 2×2 block is the identity. The correct answer is I.`,
+  X: (q) =>
+    `${q} has a bit flip — notice the off-diagonal 1s in its 2×2 block, meaning positions are swapped. The correct answer is X.`,
+  Y: (q) =>
+    `${q} has a bit and phase flip — notice the off-diagonal ±i values in its 2×2 block. The correct answer is Y.`,
+  Z: (q) =>
+    `${q} has a phase flip — the diagonal entries have opposite signs (+1 and −1) in its 2×2 block. The correct answer is Z.`,
 };
 
 export function buildExplanation(
@@ -117,18 +121,14 @@ export function buildExplanation(
   const parts: string[] = [];
 
   if (guessP1 !== correctP1) {
-    parts.push(
-      `Qubit 1 has ${PAULI_DESCRIPTIONS[correctP1]} (${correctP1}), not ${PAULI_DESCRIPTIONS[guessP1]} (${guessP1}).`
-    );
+    parts.push(PAULI_HINTS[correctP1]("Qubit 1"));
   }
   if (guessP0 !== correctP0) {
-    parts.push(
-      `Qubit 0 has ${PAULI_DESCRIPTIONS[correctP0]} (${correctP0}), not ${PAULI_DESCRIPTIONS[guessP0]} (${guessP0}).`
-    );
+    parts.push(PAULI_HINTS[correctP0]("Qubit 0"));
   }
   if (guessPhase !== correctPhase) {
     parts.push(
-      `The global phase is ${correctPhase}, not ${guessPhase}.`
+      `The global phase is ${correctPhase} — all non-zero entries are multiplied by this factor.`
     );
   }
 
