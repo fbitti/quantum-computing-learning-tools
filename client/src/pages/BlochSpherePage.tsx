@@ -1,5 +1,6 @@
-import { useState, useCallback, useRef } from "react";
-import { HelpCircle, X, RotateCcw } from "lucide-react";
+import { useState, useCallback, useRef, useEffect } from "react";
+import { HelpCircle, X, RotateCcw, ArrowLeft } from "lucide-react";
+import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import BlochSphereCanvas from "@/components/BlochSphere";
 import ControlPanel from "@/components/ControlPanel";
@@ -51,6 +52,7 @@ function animateRotation(
 }
 
 export default function BlochSpherePage() {
+  useEffect(() => { document.title = "Bloch Sphere Explorer | Quantum Computing Practice Tools"; }, []);
   const [quatState, setQuatState] = useState<QuaternionState>(identityQuat());
   const [history, setHistory] = useState<RotationOp[]>([]);
   const [activeRotation, setActiveRotation] = useState<{ axis: "x" | "y" | "z"; angle: number } | null>(null);
@@ -134,9 +136,16 @@ export default function BlochSpherePage() {
   }, [isAnimating, crankOffsets]);
 
   return (
-    <div className="flex flex-col h-[100dvh] w-full bg-background overflow-hidden">
-      <header className="flex items-center justify-between gap-2 px-3 py-2 border-b border-border bg-card/50 flex-shrink-0 z-50">
-        <h1 className="text-sm font-bold tracking-tight" data-testid="text-title">Bloch Sphere</h1>
+    <div className="flex flex-col h-full w-full overflow-hidden">
+      <div className="flex items-center justify-between gap-2 px-3 py-2 border-b border-border bg-card/50 flex-shrink-0">
+        <div className="flex items-center gap-2">
+          <Link href="/">
+            <Button variant="ghost" size="icon" data-testid="button-back-home">
+              <ArrowLeft className="w-3.5 h-3.5" />
+            </Button>
+          </Link>
+          <h1 className="text-sm font-bold tracking-tight" data-testid="text-title">Bloch Sphere Explorer</h1>
+        </div>
         <div className="flex items-center gap-1">
           <Button variant="outline" size="sm" onClick={handleReset} data-testid="button-reset">
             <RotateCcw className="w-3.5 h-3.5 mr-1.5" />
@@ -151,7 +160,7 @@ export default function BlochSpherePage() {
             <HelpCircle className="w-4 h-4" />
           </Button>
         </div>
-      </header>
+      </div>
 
       {showHelp && (
         <div className="bg-muted/60 border-b border-border px-3 py-2 text-[11px] text-muted-foreground flex-shrink-0 relative">
