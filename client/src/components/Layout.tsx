@@ -21,13 +21,6 @@ const navLinks = [
   { href: "/policies", label: "Policies", icon: Shield },
 ];
 
-const allMobileLinks = [
-  { href: "/", label: "Home", icon: Home },
-  ...tools,
-  { href: "/about", label: "About", icon: Info },
-  { href: "/newsletter", label: "Newsletter", icon: Mail },
-  { href: "/policies", label: "Policies", icon: Shield },
-];
 
 function isToolRoute(location: string) {
   return tools.some((t) => t.href === location);
@@ -112,13 +105,40 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       </header>
 
       {mobileMenuOpen && (
-        <div className="md:hidden border-b border-border bg-card/80 px-4 py-2 flex flex-col gap-1 flex-shrink-0 z-40" data-testid="nav-mobile">
-          {allMobileLinks.map(({ href, label, icon: Icon }) => (
+        <div className="md:hidden absolute top-[calc(2.5rem+1.25rem+1px)] left-0 right-0 border-b border-border bg-background px-4 py-2 flex flex-col gap-1 z-40 shadow-lg" data-testid="nav-mobile">
+          <Link href="/" onClick={() => setMobileMenuOpen(false)}>
+            <Button
+              variant={location === "/" ? "secondary" : "ghost"}
+              size="sm"
+              className="w-full justify-start text-xs gap-2"
+              data-testid="nav-mobile-home"
+            >
+              <Home className="w-3.5 h-3.5" />
+              Home
+            </Button>
+          </Link>
+
+          <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider px-3 pt-2 pb-0.5">Tools</p>
+          {tools.map(({ href, label, icon: Icon }) => (
             <Link key={href} href={href} onClick={() => setMobileMenuOpen(false)}>
               <Button
                 variant={location === href ? "secondary" : "ghost"}
                 size="sm"
-                className={`w-full justify-start text-xs gap-2 ${tools.some(t => t.href === href) ? "pl-8" : ""}`}
+                className="w-full justify-start text-xs gap-2 pl-6"
+                data-testid={`nav-mobile-${label.toLowerCase().replace(/\s+/g, "-")}`}
+              >
+                <Icon className="w-3.5 h-3.5" />
+                {label}
+              </Button>
+            </Link>
+          ))}
+
+          {navLinks.slice(1).map(({ href, label, icon: Icon }) => (
+            <Link key={href} href={href} onClick={() => setMobileMenuOpen(false)}>
+              <Button
+                variant={location === href ? "secondary" : "ghost"}
+                size="sm"
+                className="w-full justify-start text-xs gap-2"
                 data-testid={`nav-mobile-${label.toLowerCase().replace(/\s+/g, "-")}`}
               >
                 <Icon className="w-3.5 h-3.5" />
@@ -129,7 +149,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         </div>
       )}
 
-      <main className="flex-1 overflow-hidden min-h-0">
+      <main className="flex-1 overflow-hidden min-h-0 relative">
         {children}
       </main>
     </div>
