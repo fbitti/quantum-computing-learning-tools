@@ -1,83 +1,400 @@
-import { useEffect } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Link } from "wouter";
-import { Atom, Grid3X3, Wrench } from "lucide-react";
+import { Atom, Grid3X3, BookOpen, Newspaper, Wrench, ArrowRight, Mail, Sparkles } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { motion } from "framer-motion";
 
 const tools = [
   {
     id: "bloch-sphere",
     title: "Bloch Sphere Explorer",
-    description: "Visualize qubit states on a 3D Bloch sphere. Apply Rx, Ry, and Rz rotation gates using interactive drag-to-rotate cranks and preset quantum angle buttons.",
+    description:
+      "Visualize qubit states on a 3D Bloch sphere. Apply Rx, Ry, and Rz rotation gates using interactive drag-to-rotate cranks and preset quantum angle buttons.",
     icon: Atom,
     href: "/bloch-sphere",
-    available: true,
   },
   {
     id: "pauli-trainer",
     title: "Pauli Trainer",
-    description: "Practice identifying two-qubit Pauli operators from their 4×4 matrix representation. Toggle global phases for an extra challenge.",
+    description:
+      "Practice identifying two-qubit Pauli operators from their 4x4 matrix representation. Toggle global phases for an extra challenge.",
     icon: Grid3X3,
     href: "/pauli-trainer",
-    available: true,
-  },
-  {
-    id: "more-tools",
-    title: "More Tools Coming Soon",
-    description: "Additional quantum computing practice tools are in development. Stay tuned for circuit builders, gate decomposition exercises, and more.",
-    icon: Wrench,
-    href: "#",
-    available: false,
   },
 ];
 
+const comingSoon = [
+  {
+    id: "books",
+    title: "Books",
+    description:
+      "In-depth guides including a Qiskit Certification study eBook. Master quantum computing from fundamentals to certification.",
+    icon: BookOpen,
+  },
+  {
+    id: "news",
+    title: "News & Insights",
+    description:
+      "Stay up to date with the latest breakthroughs, industry trends, and educational content in the quantum computing space.",
+    icon: Newspaper,
+  },
+  {
+    id: "more-tools",
+    title: "More Tools",
+    description:
+      "Circuit builders, gate decomposition exercises, error correction simulators, and more interactive learning tools.",
+    icon: Wrench,
+  },
+];
+
+/* Floating particle for the hero background */
+function QuantumParticle({
+  delay,
+  size,
+  x,
+  y,
+  duration,
+}: {
+  delay: number;
+  size: number;
+  x: string;
+  y: string;
+  duration: number;
+}) {
+  return (
+    <motion.div
+      className="absolute rounded-full"
+      style={{
+        width: size,
+        height: size,
+        left: x,
+        top: y,
+        background:
+          "radial-gradient(circle, hsl(221 83% 53% / 0.4) 0%, hsl(280 70% 45% / 0.1) 70%, transparent 100%)",
+      }}
+      animate={{
+        opacity: [0, 0.6, 0.3, 0.7, 0],
+        scale: [0.8, 1.2, 1, 1.1, 0.8],
+        y: [0, -20, 10, -10, 0],
+        x: [0, 10, -5, 8, 0],
+      }}
+      transition={{
+        duration,
+        repeat: Infinity,
+        delay,
+        ease: "easeInOut",
+      }}
+    />
+  );
+}
+
 export default function HomePage() {
-  useEffect(() => { document.title = "Quantum Computing Practice Tools"; }, []);
+  useEffect(() => {
+    document.title = "One Million Qubits | Quantum Computing Learning Hub";
+  }, []);
+
+  const [email, setEmail] = useState("");
+  const [submitted, setSubmitted] = useState(false);
+  const signupRef = useRef<HTMLDivElement>(null);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (email.trim()) {
+      setSubmitted(true);
+      setEmail("");
+    }
+  };
+
+  const scrollToSignup = () => {
+    signupRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
   return (
     <div className="h-full overflow-y-auto">
-      <div className="max-w-3xl mx-auto px-4 py-10">
-        <div className="mb-8 text-center">
-          <h1 className="text-2xl font-bold tracking-tight mb-2" data-testid="text-home-title">
-            Quantum Computing Practice Tools
-          </h1>
-          <p className="text-sm text-muted-foreground max-w-lg mx-auto" data-testid="text-home-subtitle">
-            Interactive tools to help you build intuition for quantum computing concepts.
-            Explore, experiment, and learn by doing.
-          </p>
+      {/* ===== Hero Section ===== */}
+      <section className="relative min-h-[85vh] flex items-center justify-center overflow-hidden bg-gradient-to-b from-[hsl(220,20%,6%)] via-[hsl(220,25%,8%)] to-[hsl(220,20%,10%)]">
+        {/* Animated quantum particles */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <QuantumParticle delay={0} size={6} x="15%" y="25%" duration={6} />
+          <QuantumParticle delay={1.2} size={4} x="75%" y="15%" duration={7} />
+          <QuantumParticle delay={0.5} size={8} x="60%" y="65%" duration={5.5} />
+          <QuantumParticle delay={2} size={5} x="25%" y="70%" duration={8} />
+          <QuantumParticle delay={0.8} size={3} x="85%" y="45%" duration={6.5} />
+          <QuantumParticle delay={1.5} size={7} x="40%" y="30%" duration={7.5} />
+          <QuantumParticle delay={3} size={4} x="10%" y="50%" duration={6} />
+          <QuantumParticle delay={2.5} size={5} x="90%" y="75%" duration={5} />
+          <QuantumParticle delay={1} size={6} x="50%" y="85%" duration={8} />
+          <QuantumParticle delay={0.3} size={3} x="35%" y="10%" duration={7} />
+
+          {/* Radial glow */}
+          <div
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full opacity-20"
+            style={{
+              background:
+                "radial-gradient(circle, hsl(221 83% 53% / 0.3) 0%, hsl(280 70% 45% / 0.1) 40%, transparent 70%)",
+            }}
+          />
         </div>
 
-        <div className="grid gap-4 sm:grid-cols-2">
-          {tools.map((tool) => {
-            const Icon = tool.icon;
-            return (
-              <Card
-                key={tool.id}
-                className={tool.available ? "hover-elevate cursor-pointer" : "opacity-60"}
-                data-testid={`card-tool-${tool.id}`}
+        <div className="relative z-10 max-w-3xl mx-auto px-4 text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+          >
+            <div className="flex items-center justify-center gap-2 mb-6">
+              <div className="relative">
+                <Atom className="w-10 h-10 text-blue-400" />
+                <motion.div
+                  className="absolute inset-0"
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+                >
+                  <Sparkles className="w-10 h-10 text-purple-400/30" />
+                </motion.div>
+              </div>
+            </div>
+
+            <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight text-white mb-4 leading-tight">
+              One Million{" "}
+              <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-blue-300 bg-clip-text text-transparent">
+                Qubits
+              </span>
+            </h1>
+
+            <p className="text-lg sm:text-xl text-slate-300 mb-3 max-w-xl mx-auto leading-relaxed">
+              Your quantum computing learning hub.
+            </p>
+            <p className="text-sm sm:text-base text-slate-400 mb-8 max-w-lg mx-auto">
+              Interactive tools, study guides, and expert insights to take you from curious
+              learner to quantum-ready professional.
+            </p>
+
+            <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
+              <Button
+                size="lg"
+                className="bg-blue-600 hover:bg-blue-500 text-white border-blue-500 px-8"
+                onClick={scrollToSignup}
               >
-                <CardContent className="pt-5 pb-4 px-5 flex flex-col gap-3">
-                  <div className="flex items-center gap-2">
-                    <Icon className="w-5 h-5 text-primary" />
-                    <h2 className="text-sm font-semibold">{tool.title}</h2>
-                  </div>
-                  <p className="text-xs text-muted-foreground leading-relaxed">{tool.description}</p>
-                  {tool.available ? (
-                    <Link href={tool.href}>
-                      <Button size="sm" className="w-full mt-1" data-testid={`button-launch-${tool.id}`}>
-                        Launch Tool
-                      </Button>
-                    </Link>
-                  ) : (
-                    <Button size="sm" variant="outline" disabled className="w-full mt-1" data-testid={`button-launch-${tool.id}`}>
-                      Coming Soon
-                    </Button>
-                  )}
-                </CardContent>
-              </Card>
-            );
-          })}
+                <Mail className="w-4 h-4 mr-2" />
+                Get Early Access
+              </Button>
+              <Link href="/bloch-sphere">
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="border-slate-600 text-slate-200 hover:bg-slate-800 px-8"
+                >
+                  Try a Tool
+                  <ArrowRight className="w-4 h-4 ml-2" />
+                </Button>
+              </Link>
+            </div>
+          </motion.div>
         </div>
-      </div>
+
+        {/* Bottom fade into page background */}
+        <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-background to-transparent" />
+      </section>
+
+      {/* ===== Live Tools Section ===== */}
+      <section className="py-16 px-4">
+        <div className="max-w-4xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-50px" }}
+            transition={{ duration: 0.6 }}
+            className="text-center mb-10"
+          >
+            <p className="text-xs font-semibold uppercase tracking-widest text-primary mb-2">
+              Available Now
+            </p>
+            <h2 className="text-2xl sm:text-3xl font-bold tracking-tight mb-3">
+              Try Our Interactive Tools
+            </h2>
+            <p className="text-sm text-muted-foreground max-w-md mx-auto">
+              Start building your quantum intuition today with these hands-on learning tools.
+            </p>
+          </motion.div>
+
+          <div className="grid gap-5 sm:grid-cols-2">
+            {tools.map((tool, index) => {
+              const Icon = tool.icon;
+              return (
+                <motion.div
+                  key={tool.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-30px" }}
+                  transition={{ duration: 0.5, delay: index * 0.15 }}
+                >
+                  <Card
+                    className="hover-elevate cursor-pointer h-full"
+                    data-testid={`card-tool-${tool.id}`}
+                  >
+                    <CardContent className="pt-6 pb-5 px-6 flex flex-col gap-3 h-full">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                          <Icon className="w-5 h-5 text-primary" />
+                        </div>
+                        <h3 className="text-base font-semibold">{tool.title}</h3>
+                      </div>
+                      <p className="text-sm text-muted-foreground leading-relaxed flex-1">
+                        {tool.description}
+                      </p>
+                      <Link href={tool.href}>
+                        <Button className="w-full mt-2" data-testid={`button-launch-${tool.id}`}>
+                          Launch Tool
+                          <ArrowRight className="w-4 h-4 ml-1" />
+                        </Button>
+                      </Link>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* ===== Coming Soon Section ===== */}
+      <section className="py-16 px-4 bg-muted/30">
+        <div className="max-w-4xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-50px" }}
+            transition={{ duration: 0.6 }}
+            className="text-center mb-10"
+          >
+            <p className="text-xs font-semibold uppercase tracking-widest text-purple-500 mb-2">
+              Coming Soon
+            </p>
+            <h2 className="text-2xl sm:text-3xl font-bold tracking-tight mb-3">
+              More on the Way
+            </h2>
+            <p className="text-sm text-muted-foreground max-w-md mx-auto">
+              We're building a comprehensive quantum computing learning platform. Here's what's next.
+            </p>
+          </motion.div>
+
+          <div className="grid gap-5 sm:grid-cols-3">
+            {comingSoon.map((item, index) => {
+              const Icon = item.icon;
+              return (
+                <motion.div
+                  key={item.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-30px" }}
+                  transition={{ duration: 0.5, delay: index * 0.12 }}
+                >
+                  <Card
+                    className="h-full opacity-80 border-dashed"
+                    data-testid={`card-coming-${item.id}`}
+                  >
+                    <CardContent className="pt-6 pb-5 px-6 flex flex-col gap-3 h-full">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-lg bg-purple-500/10 flex items-center justify-center flex-shrink-0">
+                          <Icon className="w-5 h-5 text-purple-500" />
+                        </div>
+                        <h3 className="text-base font-semibold">{item.title}</h3>
+                      </div>
+                      <p className="text-sm text-muted-foreground leading-relaxed flex-1">
+                        {item.description}
+                      </p>
+                      <Button variant="outline" disabled className="w-full mt-2">
+                        Coming Soon
+                      </Button>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* ===== Email Signup Section ===== */}
+      <section ref={signupRef} id="signup" className="py-20 px-4">
+        <div className="max-w-xl mx-auto text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-50px" }}
+            transition={{ duration: 0.6 }}
+          >
+            <Mail className="w-8 h-8 text-primary mx-auto mb-4" />
+            <h2 className="text-2xl sm:text-3xl font-bold tracking-tight mb-3">
+              Stay in the Loop
+            </h2>
+            <p className="text-sm text-muted-foreground mb-8 max-w-md mx-auto">
+              Be the first to know when new tools, books, and content drop.
+              Join our growing community of quantum computing learners.
+            </p>
+
+            {!submitted ? (
+              <form
+                onSubmit={handleSubmit}
+                className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto"
+              >
+                <Input
+                  type="email"
+                  placeholder="you@example.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  className="flex-1"
+                  data-testid="input-email"
+                />
+                <Button type="submit" className="px-6" data-testid="button-subscribe">
+                  <Mail className="w-4 h-4 mr-2" />
+                  Notify Me
+                </Button>
+              </form>
+            ) : (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="rounded-lg border border-green-500/30 bg-green-500/10 px-6 py-4 max-w-md mx-auto"
+              >
+                <p className="text-sm font-semibold text-green-600 dark:text-green-400">
+                  Thanks for signing up!
+                </p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  We'll reach out when there's something exciting to share.
+                </p>
+              </motion.div>
+            )}
+
+            <p className="text-[11px] text-muted-foreground mt-4">
+              No spam, ever. Unsubscribe anytime.
+            </p>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* ===== Footer ===== */}
+      <footer className="border-t border-border py-8 px-4">
+        <div className="max-w-4xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-muted-foreground">
+          <div className="flex items-center gap-2">
+            <Atom className="w-4 h-4 text-primary" />
+            <span className="font-semibold text-foreground">One Million Qubits</span>
+          </div>
+          <div className="flex gap-4">
+            <Link href="/about" className="hover:text-foreground transition-colors">
+              About
+            </Link>
+            <Link href="/policies" className="hover:text-foreground transition-colors">
+              Policies
+            </Link>
+          </div>
+          <p>&copy; {new Date().getFullYear()} One Million Qubits. All rights reserved.</p>
+        </div>
+      </footer>
     </div>
   );
 }

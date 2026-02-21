@@ -35,8 +35,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       <header className="flex items-center justify-between gap-2 px-4 py-2.5 border-b border-border bg-card/50 flex-shrink-0 z-50">
         <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity" data-testid="link-home">
           <Atom className="w-5 h-5 text-primary" />
-          <span className="text-sm font-bold tracking-tight hidden sm:inline">Quantum Computing Practice Tools</span>
-          <span className="text-sm font-bold tracking-tight sm:hidden">Quantum Tools</span>
+          <span className="text-sm font-bold tracking-tight hidden sm:inline">One Million Qubits</span>
+          <span className="text-sm font-bold tracking-tight sm:hidden">1MQ</span>
         </Link>
 
         <nav className="hidden md:flex items-center gap-1" data-testid="nav-desktop">

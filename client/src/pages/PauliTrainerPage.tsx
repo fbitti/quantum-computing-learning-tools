@@ -100,7 +100,7 @@ function PauliSelector({
 
 export default function PauliTrainerPage() {
   useEffect(() => {
-    document.title = "Pauli Trainer | Quantum Computing Practice Tools";
+    document.title = "Pauli Trainer | One Million Qubits";
   }, []);
 
   const [includePhases, setIncludePhases] = useState(false);

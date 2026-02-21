@@ -52,7 +52,7 @@ function animateRotation(
 }
 
 export default function BlochSpherePage() {
-  useEffect(() => { document.title = "Bloch Sphere Explorer | Quantum Computing Practice Tools"; }, []);
+  useEffect(() => { document.title = "Bloch Sphere Explorer | One Million Qubits"; }, []);
   const [quatState, setQuatState] = useState<QuaternionState>(identityQuat());
   const [history, setHistory] = useState<RotationOp[]>([]);
   const [activeRotation, setActiveRotation] = useState<{ axis: "x" | "y" | "z"; angle: number } | null>(null);

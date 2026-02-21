@@ -3,7 +3,7 @@ import { Shield } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 
 export default function PoliciesPage() {
-  useEffect(() => { document.title = "Policies | Quantum Computing Practice Tools"; }, []);
+  useEffect(() => { document.title = "Policies | One Million Qubits"; }, []);
   return (
     <div className="h-full overflow-y-auto">
       <div className="max-w-2xl mx-auto px-4 py-10">
@@ -16,7 +16,7 @@ export default function PoliciesPage() {
           <h2 className="text-base font-semibold mb-3">Privacy Policy</h2>
           <div className="text-sm text-muted-foreground space-y-2 leading-relaxed">
             <p>
-              Quantum Computing Practice Tools is an educational application that runs entirely in your browser.
+              One Million Qubits is an educational application that runs entirely in your browser.
               We are committed to protecting your privacy and being transparent about our data practices.
             </p>
             <h3 className="text-sm font-medium text-foreground pt-1">Information We Collect</h3>
@@ -33,11 +33,11 @@ export default function PoliciesPage() {
             </p>
             <h3 className="text-sm font-medium text-foreground pt-1">Third-Party Services</h3>
             <p>
-              This application is hosted on Replit. Please refer to{" "}
-              <a href="https://replit.com/site/privacy" target="_blank" rel="noopener noreferrer" className="text-primary underline underline-offset-2">
-                Replit's Privacy Policy
-              </a>{" "}
-              for information about the hosting platform's data practices.
+                            This application is hosted on Vercel. Please refer to{" "}
+                            <a href="https://vercel.com/legal/privacy-policy" target="_blank" rel="noopener noreferrer" className="text-primary underline underline-offset-2">
+                              Vercel's Privacy Policy
+                            </a>{" "}
+                            for information about the hosting platform's data practices.
             </p>
           </div>
         </section>
@@ -49,7 +49,7 @@ export default function PoliciesPage() {
           <div className="text-sm text-muted-foreground space-y-2 leading-relaxed">
             <h3 className="text-sm font-medium text-foreground pt-1">Acceptance of Terms</h3>
             <p>
-              By accessing and using Quantum Computing Practice Tools, you agree to these terms.
+              By accessing and using One Million Qubits, you agree to these terms.
               If you do not agree, please do not use the application.
             </p>
             <h3 className="text-sm font-medium text-foreground pt-1">Use of the Application</h3>
