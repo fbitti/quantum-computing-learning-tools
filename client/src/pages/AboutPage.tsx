@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { Link } from "wouter";
 import { Atom, BookOpen, Wrench, Target } from "lucide-react";
 
 export default function AboutPage() {
@@ -73,9 +74,9 @@ export default function AboutPage() {
           <p>
             This platform is actively being built and expanded. New tools, study materials, and
             features are added regularly. Sign up on our{" "}
-            <a href="/" className="text-primary underline underline-offset-2">
+            <Link href="/" className="text-primary underline underline-offset-2">
               home page
-            </a>{" "}
+            </Link>{" "}
             to get notified as we grow.
           </p>
         </div>
