@@ -51,16 +51,58 @@ function animateRotation(
   });
 }
 
+const BLOCH_STORAGE_KEY = "blochSphere:state";
+
+function loadBlochState(): {
+  quatState: QuaternionState;
+  history: RotationOp[];
+  crankOffsets: { x: number; y: number; z: number };
+} | null {
+  try {
+    const raw = sessionStorage.getItem(BLOCH_STORAGE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (
+      parsed &&
+      typeof parsed.quatState === "object" &&
+      Array.isArray(parsed.history) &&
+      typeof parsed.crankOffsets === "object"
+    ) {
+      return parsed;
+    }
+  } catch {
+    // ignore corrupt data
+  }
+  return null;
+}
+
 export default function BlochSpherePage() {
   useEffect(() => { document.title = "Bloch Sphere Explorer | One Million Qubits"; }, []);
-  const [quatState, setQuatState] = useState<QuaternionState>(identityQuat());
-  const [history, setHistory] = useState<RotationOp[]>([]);
+
+  const saved = useRef(loadBlochState());
+
+  const [quatState, setQuatState] = useState<QuaternionState>(
+    saved.current?.quatState ?? identityQuat()
+  );
+  const [history, setHistory] = useState<RotationOp[]>(
+    saved.current?.history ?? []
+  );
   const [activeRotation, setActiveRotation] = useState<{ axis: "x" | "y" | "z"; angle: number } | null>(null);
   const [resetKey, setResetKey] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
-  const [crankOffsets, setCrankOffsets] = useState({ x: 0, y: 0, z: 0 });
+  const [crankOffsets, setCrankOffsets] = useState(
+    saved.current?.crankOffsets ?? { x: 0, y: 0, z: 0 }
+  );
   const accumRef = useRef({ x: 0, y: 0, z: 0 });
+
+  // Persist state to sessionStorage whenever it changes
+  useEffect(() => {
+    sessionStorage.setItem(
+      BLOCH_STORAGE_KEY,
+      JSON.stringify({ quatState, history, crankOffsets })
+    );
+  }, [quatState, history, crankOffsets]);
 
   const coords = quatToBloch(quatState);
 
@@ -105,6 +147,7 @@ export default function BlochSpherePage() {
     accumRef.current = { x: 0, y: 0, z: 0 };
     setCrankOffsets({ x: 0, y: 0, z: 0 });
     setIsAnimating(false);
+    sessionStorage.removeItem(BLOCH_STORAGE_KEY);
   }, []);
 
   const handleClearHistory = useCallback(() => {

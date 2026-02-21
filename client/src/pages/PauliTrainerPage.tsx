@@ -9,6 +9,7 @@ import {
   type PhaseLabel,
   type Matrix4x4,
   randomChallenge,
+  buildMatrix,
   buildExplanation,
   formatComplex,
   isZero,
@@ -103,8 +104,12 @@ export default function PauliTrainerPage() {
     document.title = "Pauli Trainer | One Million Qubits";
   }, []);
 
-  const [includePhases, setIncludePhases] = useState(false);
-  const [challenge, setChallenge] = useState(() => randomChallenge(false));
+  const [includePhases, setIncludePhases] = useState(() => {
+    return sessionStorage.getItem("pauliTrainer:includePhases") === "true";
+  });
+  const [challenge, setChallenge] = useState(() =>
+    randomChallenge(sessionStorage.getItem("pauliTrainer:includePhases") === "true")
+  );
   const [guessP1, setGuessP1] = useState<PauliLabel | null>(null);
   const [guessP0, setGuessP0] = useState<PauliLabel | null>(null);
   const [guessSign, setGuessSign] = useState<"+" | "-">("+" );
@@ -164,14 +169,19 @@ export default function PauliTrainerPage() {
   const handleTogglePhases = useCallback(
     (on: boolean) => {
       setIncludePhases(on);
-      setChallenge(randomChallenge(on));
-      setGuessP1(null);
-      setGuessP0(null);
-      setGuessSign("+");
-      setGuessImag(false);
-      setChecked(false);
-      setCorrect(false);
-      setExplanation("");
+      sessionStorage.setItem("pauliTrainer:includePhases", String(on));
+      if (!on) {
+        // When turning phases off, rebuild challenge with phase +1 but keep same p1/p0
+        setChallenge((prev) => ({
+          ...prev,
+          phase: "+1" as PhaseLabel,
+          matrix: buildMatrix(prev.p1, prev.p0, "+1"),
+        }));
+        setGuessSign("+");
+        setGuessImag(false);
+      }
+      // When turning phases on, keep the current challenge (phase is already +1)
+      // Don't reset guesses or checked state — the challenge stays the same
     },
     []
   );

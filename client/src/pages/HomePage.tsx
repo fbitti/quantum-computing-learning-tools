@@ -28,7 +28,7 @@ const tools = [
 const comingSoon = [
   {
     id: "books",
-    title: "Books",
+    title: "Training",
     description:
       "In-depth guides including a Qiskit Certification study eBook. Master quantum computing from fundamentals to certification.",
     icon: BookOpen,
@@ -44,7 +44,7 @@ const comingSoon = [
     id: "more-tools",
     title: "More Tools",
     description:
-      "Circuit builders, gate decomposition exercises, error correction simulators, and more interactive learning tools.",
+      "Stay tuned for more interactive learning tools.",
     icon: Wrench,
   },
 ];
