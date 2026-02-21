@@ -238,10 +238,14 @@ function RotationRing({ axis, angle, visible }: { axis: "x" | "y" | "z"; angle: 
     const steps = Math.max(16, Math.round(Math.abs(angle) / (Math.PI / 32)));
     const pts: THREE.Vector3[] = [];
     const r = 1.15;
+    // Bloch→Three.js mapping: (bloch_x, bloch_y, bloch_z) → (x, z, y)
+    // Ring must trace the correct great-circle path for each rotation axis
     const getPoint = (a: number): [number, number, number] => {
       if (axis === "z") return [r * Math.cos(a), 0, r * Math.sin(a)];
-      if (axis === "x") return [0, r * Math.sin(a), r * Math.cos(a)];
-      return [r * Math.cos(a), -r * Math.sin(a), 0];
+      // Rx: starts at Bloch +Z (Three.js +Y), arcs toward Bloch -Y (Three.js -Z)
+      if (axis === "x") return [0, r * Math.cos(a), -r * Math.sin(a)];
+      // Ry: starts at Bloch +Z (Three.js +Y), arcs toward Bloch +X (Three.js +X)
+      return [r * Math.sin(a), r * Math.cos(a), 0];
     };
     for (let i = 0; i <= steps; i++) {
       const a = (i / steps) * angle;
