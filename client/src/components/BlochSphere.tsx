@@ -258,7 +258,10 @@ function RotationRing({ axis, angle, visible }: { axis: "x" | "y" | "z"; angle: 
     const tangent = new THREE.Vector3(nx - endPt.x, ny - endPt.y, nz - endPt.z).normalize();
     const q = new THREE.Quaternion();
     q.setFromUnitVectors(new THREE.Vector3(0, 1, 0), tangent);
-    return { points: pts, arrowPos: endPt, arrowQuat: q };
+    // Offset cone backward so its tip (not center) aligns with the arc endpoint
+    const coneHeight = 0.15;
+    const conePos = endPt.clone().sub(tangent.clone().multiplyScalar(coneHeight / 2));
+    return { points: pts, arrowPos: conePos, arrowQuat: q };
   }, [axis, angle, visible]);
 
   if (!visible || points.length < 2 || !arrowPos || !arrowQuat) return null;
