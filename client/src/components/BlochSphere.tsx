@@ -1,8 +1,11 @@
-import { useRef, useMemo, Component, type ReactNode } from "react";
-import { Canvas, useFrame } from "@react-three/fiber";
+import { useRef, useMemo, useEffect, Component, type ReactNode } from "react";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { OrbitControls, Line } from "@react-three/drei";
 import * as THREE from "three";
+import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
 import type { BlochCoords } from "@/lib/quantum";
+
+const CAMERA_STORAGE_KEY = "blochSphere:camera";
 
 class WebGLErrorBoundary extends Component<
   { children: ReactNode; fallback: ReactNode },
@@ -282,6 +285,56 @@ interface BlochSphereProps {
   activeRotation?: { axis: "x" | "y" | "z"; angle: number } | null;
 }
 
+function CameraRestorer() {
+  const { camera } = useThree();
+  const controlsRef = useRef<OrbitControlsImpl>(null);
+  const initialized = useRef(false);
+
+  useEffect(() => {
+    if (initialized.current) return;
+    initialized.current = true;
+    try {
+      const raw = sessionStorage.getItem(CAMERA_STORAGE_KEY);
+      if (raw) {
+        const saved = JSON.parse(raw);
+        if (saved.position && saved.target) {
+          camera.position.set(saved.position.x, saved.position.y, saved.position.z);
+          if (controlsRef.current) {
+            controlsRef.current.target.set(saved.target.x, saved.target.y, saved.target.z);
+            controlsRef.current.update();
+          }
+        }
+      }
+    } catch {
+      // ignore corrupt data
+    }
+  }, [camera]);
+
+  useFrame(() => {
+    if (controlsRef.current) {
+      const t = controlsRef.current.target;
+      sessionStorage.setItem(
+        CAMERA_STORAGE_KEY,
+        JSON.stringify({
+          position: { x: camera.position.x, y: camera.position.y, z: camera.position.z },
+          target: { x: t.x, y: t.y, z: t.z },
+        })
+      );
+    }
+  });
+
+  return (
+    <OrbitControls
+      ref={controlsRef}
+      enablePan={false}
+      enableZoom={true}
+      minDistance={2}
+      maxDistance={6}
+      makeDefault
+    />
+  );
+}
+
 function Scene({ coords, activeRotation }: BlochSphereProps) {
   return (
     <>
@@ -303,13 +356,7 @@ function Scene({ coords, activeRotation }: BlochSphereProps) {
         />
       )}
 
-      <OrbitControls
-        enablePan={false}
-        enableZoom={true}
-        minDistance={2}
-        maxDistance={6}
-        makeDefault
-      />
+      <CameraRestorer />
     </>
   );
 }

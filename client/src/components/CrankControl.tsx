@@ -63,6 +63,7 @@ export default function CrankControl({ axis, color, onRotate, onRotateEnd, label
       onRotateEnd(accumulatedRef.current);
     }
     setIsDragging(false);
+    setDragAngle(0);
     accumulatedRef.current = 0;
   }, [isDragging, onRotateEnd]);
 

@@ -115,6 +115,7 @@ export default function BlochSpherePage() {
   const handleCrankRotateEnd = useCallback((axis: "x" | "y" | "z", totalAngle: number) => {
     const label = `R${axis}(${formatAngle(totalAngle)})`;
     setHistory(prev => [...prev, { axis, angle: totalAngle, label }]);
+    setCrankOffsets(prev => ({ ...prev, [axis]: prev[axis] + totalAngle }));
     setActiveRotation(null);
     accumRef.current[axis] = 0;
   }, []);
@@ -148,6 +149,7 @@ export default function BlochSpherePage() {
     setCrankOffsets({ x: 0, y: 0, z: 0 });
     setIsAnimating(false);
     sessionStorage.removeItem(BLOCH_STORAGE_KEY);
+    sessionStorage.removeItem("blochSphere:camera");
   }, []);
 
   const handleClearHistory = useCallback(() => {

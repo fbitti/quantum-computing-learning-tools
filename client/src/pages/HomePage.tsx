@@ -306,9 +306,6 @@ export default function HomePage() {
                       <p className="text-sm text-muted-foreground leading-relaxed flex-1">
                         {item.description}
                       </p>
-                      <Button variant="outline" disabled className="w-full mt-2">
-                        Coming Soon
-                      </Button>
                     </CardContent>
                   </Card>
                 </motion.div>
