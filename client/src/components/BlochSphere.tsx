@@ -189,19 +189,12 @@ function Axes() {
 
 function StateVector({ coords }: { coords: BlochCoords }) {
   const groupRef = useRef<THREE.Group>(null);
-  const currentRef = useRef({ x: 0, y: 0, z: 1 });
   const glowRef = useRef<THREE.Mesh>(null);
 
-  useFrame((_, delta) => {
-    const lerp = 1 - Math.pow(0.001, delta);
-    currentRef.current.x += (coords.x - currentRef.current.x) * lerp;
-    currentRef.current.y += (coords.y - currentRef.current.y) * lerp;
-    currentRef.current.z += (coords.z - currentRef.current.z) * lerp;
-
+  useFrame(() => {
     if (!groupRef.current) return;
 
-    const { x, y, z } = currentRef.current;
-    const dir = new THREE.Vector3(x, z, y).normalize();
+    const dir = new THREE.Vector3(coords.x, coords.z, coords.y).normalize();
     const up = new THREE.Vector3(0, 1, 0);
 
     const quaternion = new THREE.Quaternion();
