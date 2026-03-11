@@ -9,6 +9,7 @@ import {
   type PhaseLabel,
   type Matrix4x4,
   randomChallenge,
+  buildMatrix,
   buildExplanation,
   formatComplex,
   isZero,
@@ -100,11 +101,15 @@ function PauliSelector({
 
 export default function PauliTrainerPage() {
   useEffect(() => {
-    document.title = "Pauli Trainer | Quantum Computing Practice Tools";
+    document.title = "Pauli Trainer | One Million Qubits";
   }, []);
 
-  const [includePhases, setIncludePhases] = useState(false);
-  const [challenge, setChallenge] = useState(() => randomChallenge(false));
+  const [includePhases, setIncludePhases] = useState(() => {
+    return sessionStorage.getItem("pauliTrainer:includePhases") === "true";
+  });
+  const [challenge, setChallenge] = useState(() =>
+    randomChallenge(sessionStorage.getItem("pauliTrainer:includePhases") === "true")
+  );
   const [guessP1, setGuessP1] = useState<PauliLabel | null>(null);
   const [guessP0, setGuessP0] = useState<PauliLabel | null>(null);
   const [guessSign, setGuessSign] = useState<"+" | "-">("+" );
@@ -112,6 +117,16 @@ export default function PauliTrainerPage() {
   const [checked, setChecked] = useState(false);
   const [correct, setCorrect] = useState(false);
   const [explanation, setExplanation] = useState("");
+  const [showAnswer, setShowAnswer] = useState(false);
+
+  // When the user changes any selection after a wrong answer, reset to allow re-checking
+  const resetIfWrong = useCallback(() => {
+    if (checked && !correct) {
+      setChecked(false);
+      setShowAnswer(false);
+      setExplanation("");
+    }
+  }, [checked, correct]);
   const [showHelp, setShowHelp] = useState(false);
   const [score, setScore] = useState({ correct: 0, total: 0 });
 
@@ -159,24 +174,31 @@ export default function PauliTrainerPage() {
     setChecked(false);
     setCorrect(false);
     setExplanation("");
+    setShowAnswer(false);
   }, [includePhases]);
 
   const handleTogglePhases = useCallback(
     (on: boolean) => {
       setIncludePhases(on);
-      setChallenge(randomChallenge(on));
-      setGuessP1(null);
-      setGuessP0(null);
-      setGuessSign("+");
-      setGuessImag(false);
-      setChecked(false);
-      setCorrect(false);
-      setExplanation("");
+      sessionStorage.setItem("pauliTrainer:includePhases", String(on));
+      if (!on) {
+        // When turning phases off, rebuild challenge with phase +1 but keep same p1/p0
+        setChallenge((prev) => ({
+          ...prev,
+          phase: "+1" as PhaseLabel,
+          matrix: buildMatrix(prev.p1, prev.p0, "+1"),
+        }));
+        setGuessSign("+");
+        setGuessImag(false);
+      }
+      // When turning phases on, keep the current challenge (phase is already +1)
+      // Don't reset guesses or checked state — the challenge stays the same
     },
     []
   );
 
   const canCheck = guessP1 !== null && guessP0 !== null && !checked;
+  const canRecheck = checked && !correct;
 
   return (
     <div className="flex flex-col h-full w-full overflow-hidden">
@@ -282,6 +304,7 @@ export default function PauliTrainerPage() {
                           onClick={() => {
                             setGuessSign(s);
                             setGuessImag(im);
+                            resetIfWrong();
                           }}
                           data-testid={`phase-select-${label}`}
                         >
@@ -297,18 +320,18 @@ export default function PauliTrainerPage() {
             <PauliSelector
               label="QUBIT 1 (P1)"
               selected={guessP1}
-              onSelect={setGuessP1}
+              onSelect={(p) => { setGuessP1(p); resetIfWrong(); }}
               testIdPrefix="q1"
             />
 
             <div className="flex justify-center">
-              <span className="text-muted-foreground/40 text-lg">⊗</span>
+              <span className="text-muted-foreground/40 text-3xl font-bold">⊗</span>
             </div>
 
             <PauliSelector
               label="QUBIT 0 (P0)"
               selected={guessP0}
-              onSelect={setGuessP0}
+              onSelect={(p) => { setGuessP0(p); resetIfWrong(); }}
               testIdPrefix="q0"
             />
 
@@ -319,7 +342,7 @@ export default function PauliTrainerPage() {
                 onClick={handleCheck}
                 data-testid="button-check"
               >
-                Check Answer
+                Check
               </Button>
             ) : correct ? (
               <div className="space-y-3">
@@ -330,7 +353,7 @@ export default function PauliTrainerPage() {
                   <p className="text-sm font-semibold text-green-600">Correct!</p>
                 </div>
                 <Button className="w-full" onClick={handleNext} data-testid="button-next">
-                  Next Challenge
+                  Next
                 </Button>
               </div>
             ) : (
@@ -340,11 +363,27 @@ export default function PauliTrainerPage() {
                   data-testid="feedback-incorrect"
                 >
                   <p className="text-sm font-semibold text-destructive mb-1">Not quite</p>
-                  <p className="text-xs text-muted-foreground">{explanation}</p>
+                  {showAnswer ? (
+                    <p className="text-xs text-muted-foreground">{explanation}</p>
+                  ) : (
+                    <p className="text-xs text-muted-foreground">Try again or check the answer below.</p>
+                  )}
                 </div>
-                <Button className="w-full" onClick={handleNext} data-testid="button-next">
-                  Next Challenge
-                </Button>
+                <div className="flex gap-2">
+                  {!showAnswer && (
+                    <Button
+                      variant="outline"
+                      className="flex-1"
+                      onClick={() => setShowAnswer(true)}
+                      data-testid="button-show-answer"
+                    >
+                      Explain
+                    </Button>
+                  )}
+                  <Button className="flex-1" onClick={handleNext} data-testid="button-next">
+                    Next
+                  </Button>
+                </div>
               </div>
             )}
           </div>

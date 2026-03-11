@@ -1,8 +1,11 @@
-import { useRef, useMemo, Component, type ReactNode } from "react";
-import { Canvas, useFrame } from "@react-three/fiber";
+import { useRef, useMemo, useEffect, Component, type ReactNode } from "react";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { OrbitControls, Line } from "@react-three/drei";
 import * as THREE from "three";
+import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
 import type { BlochCoords } from "@/lib/quantum";
+
+const CAMERA_STORAGE_KEY = "blochSphere:camera";
 
 class WebGLErrorBoundary extends Component<
   { children: ReactNode; fallback: ReactNode },
@@ -186,19 +189,12 @@ function Axes() {
 
 function StateVector({ coords }: { coords: BlochCoords }) {
   const groupRef = useRef<THREE.Group>(null);
-  const currentRef = useRef({ x: 0, y: 0, z: 1 });
   const glowRef = useRef<THREE.Mesh>(null);
 
-  useFrame((_, delta) => {
-    const lerp = 1 - Math.pow(0.001, delta);
-    currentRef.current.x += (coords.x - currentRef.current.x) * lerp;
-    currentRef.current.y += (coords.y - currentRef.current.y) * lerp;
-    currentRef.current.z += (coords.z - currentRef.current.z) * lerp;
-
+  useFrame(() => {
     if (!groupRef.current) return;
 
-    const { x, y, z } = currentRef.current;
-    const dir = new THREE.Vector3(x, z, y).normalize();
+    const dir = new THREE.Vector3(coords.x, coords.z, coords.y).normalize();
     const up = new THREE.Vector3(0, 1, 0);
 
     const quaternion = new THREE.Quaternion();
@@ -242,10 +238,14 @@ function RotationRing({ axis, angle, visible }: { axis: "x" | "y" | "z"; angle: 
     const steps = Math.max(16, Math.round(Math.abs(angle) / (Math.PI / 32)));
     const pts: THREE.Vector3[] = [];
     const r = 1.15;
+    // Bloch→Three.js mapping: (bloch_x, bloch_y, bloch_z) → (x, z, y)
+    // Ring must trace the correct great-circle path for each rotation axis
     const getPoint = (a: number): [number, number, number] => {
       if (axis === "z") return [r * Math.cos(a), 0, r * Math.sin(a)];
-      if (axis === "x") return [0, r * Math.sin(a), r * Math.cos(a)];
-      return [r * Math.cos(a), -r * Math.sin(a), 0];
+      // Rx: starts at Bloch +Z (Three.js +Y), arcs toward Bloch -Y (Three.js -Z)
+      if (axis === "x") return [0, r * Math.cos(a), -r * Math.sin(a)];
+      // Ry: starts at Bloch +Z (Three.js +Y), arcs toward Bloch +X (Three.js +X)
+      return [r * Math.sin(a), r * Math.cos(a), 0];
     };
     for (let i = 0; i <= steps; i++) {
       const a = (i / steps) * angle;
@@ -258,7 +258,10 @@ function RotationRing({ axis, angle, visible }: { axis: "x" | "y" | "z"; angle: 
     const tangent = new THREE.Vector3(nx - endPt.x, ny - endPt.y, nz - endPt.z).normalize();
     const q = new THREE.Quaternion();
     q.setFromUnitVectors(new THREE.Vector3(0, 1, 0), tangent);
-    return { points: pts, arrowPos: endPt, arrowQuat: q };
+    // Offset cone backward so its tip (not center) aligns with the arc endpoint
+    const coneHeight = 0.15;
+    const conePos = endPt.clone().sub(tangent.clone().multiplyScalar(coneHeight / 2));
+    return { points: pts, arrowPos: conePos, arrowQuat: q };
   }, [axis, angle, visible]);
 
   if (!visible || points.length < 2 || !arrowPos || !arrowQuat) return null;
@@ -282,6 +285,56 @@ interface BlochSphereProps {
   activeRotation?: { axis: "x" | "y" | "z"; angle: number } | null;
 }
 
+function CameraRestorer() {
+  const { camera } = useThree();
+  const controlsRef = useRef<OrbitControlsImpl>(null);
+  const initialized = useRef(false);
+
+  useEffect(() => {
+    if (initialized.current) return;
+    initialized.current = true;
+    try {
+      const raw = sessionStorage.getItem(CAMERA_STORAGE_KEY);
+      if (raw) {
+        const saved = JSON.parse(raw);
+        if (saved.position && saved.target) {
+          camera.position.set(saved.position.x, saved.position.y, saved.position.z);
+          if (controlsRef.current) {
+            controlsRef.current.target.set(saved.target.x, saved.target.y, saved.target.z);
+            controlsRef.current.update();
+          }
+        }
+      }
+    } catch {
+      // ignore corrupt data
+    }
+  }, [camera]);
+
+  useFrame(() => {
+    if (controlsRef.current) {
+      const t = controlsRef.current.target;
+      sessionStorage.setItem(
+        CAMERA_STORAGE_KEY,
+        JSON.stringify({
+          position: { x: camera.position.x, y: camera.position.y, z: camera.position.z },
+          target: { x: t.x, y: t.y, z: t.z },
+        })
+      );
+    }
+  });
+
+  return (
+    <OrbitControls
+      ref={controlsRef}
+      enablePan={false}
+      enableZoom={true}
+      minDistance={2}
+      maxDistance={6}
+      makeDefault
+    />
+  );
+}
+
 function Scene({ coords, activeRotation }: BlochSphereProps) {
   return (
     <>
@@ -303,13 +356,7 @@ function Scene({ coords, activeRotation }: BlochSphereProps) {
         />
       )}
 
-      <OrbitControls
-        enablePan={false}
-        enableZoom={true}
-        minDistance={2}
-        maxDistance={6}
-        makeDefault
-      />
+      <CameraRestorer />
     </>
   );
 }

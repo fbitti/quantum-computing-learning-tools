@@ -1,5 +1,5 @@
 import { Link, useLocation } from "wouter";
-import { Atom, Grid3X3, Home, Info, Mail, Shield, Menu, X, ChevronDown, Wrench } from "lucide-react";
+import { Atom, Grid3X3, Home, Menu, X, ChevronDown, Wrench } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -16,9 +16,6 @@ const tools = [
 
 const navLinks = [
   { href: "/", label: "Home", icon: Home },
-  { href: "/about", label: "About", icon: Info },
-  { href: "/newsletter", label: "Newsletter", icon: Mail },
-  { href: "/policies", label: "Policies", icon: Shield },
 ];
 
 
@@ -35,8 +32,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       <header className="flex items-center justify-between gap-2 px-4 py-2.5 border-b border-border bg-card/50 flex-shrink-0 z-50">
         <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity" data-testid="link-home">
           <Atom className="w-5 h-5 text-primary" />
-          <span className="text-sm font-bold tracking-tight hidden sm:inline">Quantum Computing Practice Tools</span>
-          <span className="text-sm font-bold tracking-tight sm:hidden">Quantum Tools</span>
+          <span className="text-sm font-bold tracking-tight hidden sm:inline">One Million Qubits</span>
+          <span className="text-sm font-bold tracking-tight sm:hidden">1MQ</span>
         </Link>
 
         <nav className="hidden md:flex items-center gap-1" data-testid="nav-desktop">
@@ -79,18 +76,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             </DropdownMenuContent>
           </DropdownMenu>
 
-          {navLinks.slice(1).map(({ href, label }) => (
-            <Link key={href} href={href}>
-              <Button
-                variant={location === href ? "secondary" : "ghost"}
-                size="sm"
-                className="text-xs"
-                data-testid={`nav-${label.toLowerCase().replace(/\s+/g, "-")}`}
-              >
-                {label}
-              </Button>
-            </Link>
-          ))}
         </nav>
 
         <Button
@@ -133,19 +118,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             </Link>
           ))}
 
-          {navLinks.slice(1).map(({ href, label, icon: Icon }) => (
-            <Link key={href} href={href} onClick={() => setMobileMenuOpen(false)}>
-              <Button
-                variant={location === href ? "secondary" : "ghost"}
-                size="sm"
-                className="w-full justify-start text-xs gap-2"
-                data-testid={`nav-mobile-${label.toLowerCase().replace(/\s+/g, "-")}`}
-              >
-                <Icon className="w-3.5 h-3.5" />
-                {label}
-              </Button>
-            </Link>
-          ))}
         </div>
       )}
 

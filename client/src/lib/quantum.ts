@@ -82,7 +82,11 @@ export function quatToBloch(q: QuaternionState): BlochCoords {
   const nz = len > 1e-10 ? bz / len : 1;
 
   const theta = Math.acos(Math.max(-1, Math.min(1, nz)));
-  const phi = Math.atan2(ny, nx);
+  // At the poles (theta ≈ 0 or π), phi is undefined on the Bloch sphere.
+  // Rz rotations on |0⟩ or |1⟩ only add a global phase and should not
+  // change the displayed phi. Force phi to 0 when sin(theta) is negligible.
+  const sinTheta = Math.sin(theta);
+  const phi = sinTheta > 1e-10 ? Math.atan2(ny, nx) : 0;
 
   return { theta, phi, x: nx, y: ny, z: nz };
 }

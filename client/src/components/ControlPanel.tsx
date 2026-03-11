@@ -71,11 +71,11 @@ function StateDisplay({ coords }: { coords: BlochCoords }) {
 
       <div className="grid grid-cols-2 gap-2 text-xs">
         <div className="bg-muted/50 rounded-md p-2 text-center">
-          <span className="text-muted-foreground block">&theta;</span>
+          <span className="text-muted-foreground block">angle &theta;</span>
           <span className="font-mono" data-testid="text-theta">{formatAngle(coords.theta)}</span>
         </div>
         <div className="bg-muted/50 rounded-md p-2 text-center">
-          <span className="text-muted-foreground block">&phi;</span>
+          <span className="text-muted-foreground block">angle &phi;</span>
           <span className="font-mono" data-testid="text-phi">{formatAngle(coords.phi)}</span>
         </div>
       </div>
