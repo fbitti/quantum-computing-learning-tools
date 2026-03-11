@@ -342,7 +342,7 @@ export default function PauliTrainerPage() {
                 onClick={handleCheck}
                 data-testid="button-check"
               >
-                Check Answer
+                Check
               </Button>
             ) : correct ? (
               <div className="space-y-3">
@@ -353,7 +353,7 @@ export default function PauliTrainerPage() {
                   <p className="text-sm font-semibold text-green-600">Correct!</p>
                 </div>
                 <Button className="w-full" onClick={handleNext} data-testid="button-next">
-                  Next Challenge
+                  Next
                 </Button>
               </div>
             ) : (
@@ -377,11 +377,11 @@ export default function PauliTrainerPage() {
                       onClick={() => setShowAnswer(true)}
                       data-testid="button-show-answer"
                     >
-                      Check Answer
+                      Explain
                     </Button>
                   )}
                   <Button className="flex-1" onClick={handleNext} data-testid="button-next">
-                    Next Challenge
+                    Next
                   </Button>
                 </div>
               </div>
