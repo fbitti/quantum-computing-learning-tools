@@ -39,30 +39,37 @@ function StateDisplay({ coords, quatState }: { coords: BlochCoords; quatState?: 
   const alphaStr = formatComplex(ket.alpha[0], ket.alpha[1]);
   const betaStr = formatComplex(ket.beta[0], ket.beta[1]);
 
-  // Compute the relative phase between |0⟩ and |1⟩ amplitudes.
+  // Compute the phase angle of the quantum state, consistent with
+  // IBM's Q-sphere visualization: track phase even at the poles so it
+  // is preserved through gate sequences (important for multi-qubit).
   // The quaternion (w, x, y, z) maps to the SU(2) state:
   //   |ψ⟩ = α|0⟩ + β|1⟩  where  α = w - iz,  β = y - ix
-  // For superpositions (both α,β nonzero): phase = arg(β) - arg(α)
-  // At the poles (|0⟩ or |1⟩): one amplitude is zero, so the surviving
-  // amplitude's phase is just a global phase with no physical significance.
-  // We display 0 in that case.
+  // At |0⟩ pole (β ≈ 0): phase = arg(α)
+  // At |1⟩ pole (α ≈ 0): phase = arg(β)
+  // For superpositions:    phase = arg(β) - arg(α)  (relative phase)
   let phaseStr = "0";
   if (quatState) {
     const { w, x: qx, y: qy, z: qz } = quatState;
     // α = w - iz,  β = y - ix
     const alphaAbs2 = w * w + qz * qz;
     const betaAbs2 = qy * qy + qx * qx;
+    let phase = 0;
     if (alphaAbs2 > 1e-10 && betaAbs2 > 1e-10) {
-      // Both amplitudes nonzero: show relative phase
+      // Superposition: relative phase arg(β) - arg(α)
       const argAlpha = Math.atan2(-qz, w);
       const argBeta = Math.atan2(-qx, qy);
-      let relPhase = argBeta - argAlpha;
-      // Normalize to (-π, π]
-      if (relPhase > Math.PI) relPhase -= 2 * Math.PI;
-      if (relPhase <= -Math.PI) relPhase += 2 * Math.PI;
-      phaseStr = formatAngle(relPhase);
+      phase = argBeta - argAlpha;
+    } else if (alphaAbs2 > 1e-10) {
+      // |0⟩ pole: phase = arg(α)
+      phase = Math.atan2(-qz, w);
+    } else if (betaAbs2 > 1e-10) {
+      // |1⟩ pole: phase = arg(β)
+      phase = Math.atan2(-qx, qy);
     }
-    // At either pole: phaseStr stays "0" (global phase only, not physical)
+    // Normalize to (-π, π]
+    if (phase > Math.PI) phase -= 2 * Math.PI;
+    if (phase <= -Math.PI) phase += 2 * Math.PI;
+    phaseStr = formatAngle(phase);
   }
 
   return (
