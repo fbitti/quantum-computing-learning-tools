@@ -39,37 +39,35 @@ function StateDisplay({ coords, quatState }: { coords: BlochCoords; quatState?: 
   const alphaStr = formatComplex(ket.alpha[0], ket.alpha[1]);
   const betaStr = formatComplex(ket.beta[0], ket.beta[1]);
 
-  // Compute the phase angle of the quantum state, consistent with
-  // IBM's Q-sphere visualization: track phase even at the poles so it
-  // is preserved through gate sequences (important for multi-qubit).
+  // Compute the relative phase of the quantum state.
   // The quaternion (w, x, y, z) maps to the SU(2) state:
   //   |ψ⟩ = α|0⟩ + β|1⟩  where  α = w - iz,  β = y - ix
-  // At |0⟩ pole (β ≈ 0): phase = arg(α)
-  // At |1⟩ pole (α ≈ 0): phase = arg(β)
-  // For superpositions:    phase = arg(β) - arg(α)  (relative phase)
+  //
+  // We factor out the global phase (making α real positive) and show
+  // arg(β') where β' = β·e^{-i·arg(α)}.  This equals arg(β) − arg(α),
+  // the relative phase between the two amplitudes.
+  //
+  // At the poles one amplitude is zero, so the surviving amplitude's
+  // phase is purely global — we display 0.  This means Rx/Ry rotations
+  // correctly show no phase change at the poles (only Rz on a
+  // superposition changes the displayed phase).
   let phaseStr = "0";
   if (quatState) {
     const { w, x: qx, y: qy, z: qz } = quatState;
     // α = w - iz,  β = y - ix
     const alphaAbs2 = w * w + qz * qz;
     const betaAbs2 = qy * qy + qx * qx;
-    let phase = 0;
     if (alphaAbs2 > 1e-10 && betaAbs2 > 1e-10) {
       // Superposition: relative phase arg(β) - arg(α)
       const argAlpha = Math.atan2(-qz, w);
       const argBeta = Math.atan2(-qx, qy);
-      phase = argBeta - argAlpha;
-    } else if (alphaAbs2 > 1e-10) {
-      // |0⟩ pole: phase = arg(α)
-      phase = Math.atan2(-qz, w);
-    } else if (betaAbs2 > 1e-10) {
-      // |1⟩ pole: phase = arg(β)
-      phase = Math.atan2(-qx, qy);
+      let relPhase = argBeta - argAlpha;
+      // Normalize to (-π, π]
+      if (relPhase > Math.PI) relPhase -= 2 * Math.PI;
+      if (relPhase <= -Math.PI) relPhase += 2 * Math.PI;
+      phaseStr = formatAngle(relPhase);
     }
-    // Normalize to (-π, π]
-    if (phase > Math.PI) phase -= 2 * Math.PI;
-    if (phase <= -Math.PI) phase += 2 * Math.PI;
-    phaseStr = formatAngle(phase);
+    // At either pole: one amplitude is zero, global phase only → 0
   }
 
   return (
