@@ -1,11 +1,26 @@
 import { useEffect } from "react";
 import { Link } from "wouter";
-import { Atom } from "lucide-react";
+import { Atom, Award } from "lucide-react";
 
 export default function AboutPage() {
   useEffect(() => {
     document.title = "About | One Million Qubits";
   }, []);
+
+  const credentials = [
+    {
+      title: "IBM Certified Quantum Developer — Qiskit v2.X Associate",
+      url: "https://www.credly.com/earner/earned/badge/018caf9c-ce2b-4056-85a6-0b5a97d552a5",
+    },
+    {
+      title: "Qiskit Advocate Mentorship Program 2025 Contributor",
+      url: "https://www.credly.com/earner/earned/badge/a9b58a02-154e-4517-8de3-d02515e5ee6d",
+    },
+    {
+      title: "Qiskit Global Summer School 2025 — Quantum Excellence",
+      url: "https://www.credly.com/earner/earned/badge/9bbbb902-141a-4d73-bbba-1f00758ca1c5",
+    },
+  ];
 
   return (
     <div className="h-full overflow-y-auto">
@@ -25,6 +40,28 @@ export default function AboutPage() {
             hands-on intuition for quantum computing concepts and help you approve the IBM Qiskit
             certification.
           </p>
+
+          <div className="space-y-3 pt-2">
+            <div className="flex items-center gap-2">
+              <Award className="w-4 h-4 text-primary" />
+              <h2 className="text-sm font-semibold text-foreground">IBM Credentials</h2>
+            </div>
+            <ul className="space-y-2">
+              {credentials.map((cred) => (
+                <li key={cred.url} className="flex items-start gap-2">
+                  <span className="text-primary mt-1">•</span>
+                  <a
+                    href={cred.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-primary underline underline-offset-2 hover:text-primary/80 transition-colors"
+                  >
+                    {cred.title}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
 
           <p>
             This platform is actively being built and expanded. New tools, study materials, and

@@ -117,6 +117,7 @@ export default function PauliTrainerPage() {
   const [checked, setChecked] = useState(false);
   const [correct, setCorrect] = useState(false);
   const [explanation, setExplanation] = useState("");
+  const [showAnswer, setShowAnswer] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
   const [score, setScore] = useState({ correct: 0, total: 0 });
 
@@ -164,6 +165,7 @@ export default function PauliTrainerPage() {
     setChecked(false);
     setCorrect(false);
     setExplanation("");
+    setShowAnswer(false);
   }, [includePhases]);
 
   const handleTogglePhases = useCallback(
@@ -312,7 +314,7 @@ export default function PauliTrainerPage() {
             />
 
             <div className="flex justify-center">
-              <span className="text-muted-foreground/40 text-lg">⊗</span>
+              <span className="text-muted-foreground/40 text-3xl font-bold">⊗</span>
             </div>
 
             <PauliSelector
@@ -350,11 +352,27 @@ export default function PauliTrainerPage() {
                   data-testid="feedback-incorrect"
                 >
                   <p className="text-sm font-semibold text-destructive mb-1">Not quite</p>
-                  <p className="text-xs text-muted-foreground">{explanation}</p>
+                  {showAnswer ? (
+                    <p className="text-xs text-muted-foreground">{explanation}</p>
+                  ) : (
+                    <p className="text-xs text-muted-foreground">Try again or check the answer below.</p>
+                  )}
                 </div>
-                <Button className="w-full" onClick={handleNext} data-testid="button-next">
-                  Next Challenge
-                </Button>
+                <div className="flex gap-2">
+                  {!showAnswer && (
+                    <Button
+                      variant="outline"
+                      className="flex-1"
+                      onClick={() => setShowAnswer(true)}
+                      data-testid="button-show-answer"
+                    >
+                      Check Answer
+                    </Button>
+                  )}
+                  <Button className="flex-1" onClick={handleNext} data-testid="button-next">
+                    Next Challenge
+                  </Button>
+                </div>
               </div>
             )}
           </div>
