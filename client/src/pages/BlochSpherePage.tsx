@@ -232,7 +232,6 @@ export default function BlochSpherePage() {
         <div className="flex-1 lg:flex-none lg:w-[380px] border-t lg:border-t-0 lg:border-l border-border bg-card/50 overflow-y-auto min-h-0">
           <ControlPanel
             coords={coords}
-            quatState={quatState}
             history={history}
             onRotate={handleCrankRotate}
             onRotateEnd={handleCrankRotateEnd}

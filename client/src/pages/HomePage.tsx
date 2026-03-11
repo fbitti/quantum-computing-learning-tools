@@ -409,6 +409,7 @@ export default function HomePage() {
           </div>
 
           <p>&copy; {new Date().getFullYear()} One Million Qubits. All rights reserved.</p>
+          <p className="text-[10px] text-muted-foreground/60">v0.1.0</p>
         </div>
       </footer>
     </div>

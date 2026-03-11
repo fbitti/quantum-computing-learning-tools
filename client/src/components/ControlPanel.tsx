@@ -8,7 +8,6 @@ import CrankControl from "./CrankControl";
 import {
   type RotationOp,
   type BlochCoords,
-  type QuaternionState,
   PRESET_ANGLES,
   KNOWN_EQUIVALENCES,
   formatComplex,
@@ -18,7 +17,6 @@ import {
 
 interface ControlPanelProps {
   coords: BlochCoords;
-  quatState?: QuaternionState;
   history: RotationOp[];
   onRotate: (axis: "x" | "y" | "z", angle: number) => void;
   onRotateEnd: (axis: "x" | "y" | "z", totalAngle: number) => void;
@@ -34,41 +32,10 @@ function fixNegZero(s: string): string {
   return s === "-0.000" || s === "-0.00" || s === "-0.0" || s === "-0" ? s.slice(1) : s;
 }
 
-function StateDisplay({ coords, quatState }: { coords: BlochCoords; quatState?: QuaternionState }) {
+function StateDisplay({ coords }: { coords: BlochCoords }) {
   const ket = blochToKet(coords);
   const alphaStr = formatComplex(ket.alpha[0], ket.alpha[1]);
   const betaStr = formatComplex(ket.beta[0], ket.beta[1]);
-
-  // Compute the relative phase of the quantum state.
-  // The quaternion (w, x, y, z) maps to the SU(2) state:
-  //   |ψ⟩ = α|0⟩ + β|1⟩  where  α = w - iz,  β = y - ix
-  //
-  // We factor out the global phase (making α real positive) and show
-  // arg(β') where β' = β·e^{-i·arg(α)}.  This equals arg(β) − arg(α),
-  // the relative phase between the two amplitudes.
-  //
-  // At the poles one amplitude is zero, so the surviving amplitude's
-  // phase is purely global — we display 0.  This means Rx/Ry rotations
-  // correctly show no phase change at the poles (only Rz on a
-  // superposition changes the displayed phase).
-  let phaseStr = "0";
-  if (quatState) {
-    const { w, x: qx, y: qy, z: qz } = quatState;
-    // α = w - iz,  β = y - ix
-    const alphaAbs2 = w * w + qz * qz;
-    const betaAbs2 = qy * qy + qx * qx;
-    if (alphaAbs2 > 1e-10 && betaAbs2 > 1e-10) {
-      // Superposition: relative phase arg(β) - arg(α)
-      const argAlpha = Math.atan2(-qz, w);
-      const argBeta = Math.atan2(-qx, qy);
-      let relPhase = argBeta - argAlpha;
-      // Normalize to (-π, π]
-      if (relPhase > Math.PI) relPhase -= 2 * Math.PI;
-      if (relPhase <= -Math.PI) relPhase += 2 * Math.PI;
-      phaseStr = formatAngle(relPhase);
-    }
-    // At either pole: one amplitude is zero, global phase only → 0
-  }
 
   return (
     <div className="space-y-3">
@@ -102,18 +69,14 @@ function StateDisplay({ coords, quatState }: { coords: BlochCoords; quatState?: 
         </div>
       </div>
 
-      <div className="grid grid-cols-3 gap-2 text-xs">
+      <div className="grid grid-cols-2 gap-2 text-xs">
         <div className="bg-muted/50 rounded-md p-2 text-center">
-          <span className="text-muted-foreground block">&theta;</span>
+          <span className="text-muted-foreground block">angle &theta;</span>
           <span className="font-mono" data-testid="text-theta">{formatAngle(coords.theta)}</span>
         </div>
         <div className="bg-muted/50 rounded-md p-2 text-center">
-          <span className="text-muted-foreground block">&phi;</span>
+          <span className="text-muted-foreground block">angle &phi;</span>
           <span className="font-mono" data-testid="text-phi">{formatAngle(coords.phi)}</span>
-        </div>
-        <div className="bg-purple-500/10 dark:bg-purple-500/15 rounded-md p-2 text-center">
-          <span className="text-muted-foreground block">Phase</span>
-          <span className="font-mono text-purple-600 dark:text-purple-400" data-testid="text-phase">{phaseStr}</span>
         </div>
       </div>
 
@@ -249,7 +212,6 @@ function KnownSequences({ onApplySequence }: { onApplySequence: (ops: RotationOp
 
 export default function ControlPanel({
   coords,
-  quatState,
   history,
   onRotate,
   onRotateEnd,
@@ -276,7 +238,7 @@ export default function ControlPanel({
 
       <Separator />
 
-      <StateDisplay coords={coords} quatState={quatState} />
+      <StateDisplay coords={coords} />
 
       <Separator />
 
