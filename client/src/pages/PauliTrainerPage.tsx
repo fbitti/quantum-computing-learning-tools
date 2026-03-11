@@ -118,6 +118,15 @@ export default function PauliTrainerPage() {
   const [correct, setCorrect] = useState(false);
   const [explanation, setExplanation] = useState("");
   const [showAnswer, setShowAnswer] = useState(false);
+
+  // When the user changes any selection after a wrong answer, reset to allow re-checking
+  const resetIfWrong = useCallback(() => {
+    if (checked && !correct) {
+      setChecked(false);
+      setShowAnswer(false);
+      setExplanation("");
+    }
+  }, [checked, correct]);
   const [showHelp, setShowHelp] = useState(false);
   const [score, setScore] = useState({ correct: 0, total: 0 });
 
@@ -189,6 +198,7 @@ export default function PauliTrainerPage() {
   );
 
   const canCheck = guessP1 !== null && guessP0 !== null && !checked;
+  const canRecheck = checked && !correct;
 
   return (
     <div className="flex flex-col h-full w-full overflow-hidden">
@@ -294,6 +304,7 @@ export default function PauliTrainerPage() {
                           onClick={() => {
                             setGuessSign(s);
                             setGuessImag(im);
+                            resetIfWrong();
                           }}
                           data-testid={`phase-select-${label}`}
                         >
@@ -309,7 +320,7 @@ export default function PauliTrainerPage() {
             <PauliSelector
               label="QUBIT 1 (P1)"
               selected={guessP1}
-              onSelect={setGuessP1}
+              onSelect={(p) => { setGuessP1(p); resetIfWrong(); }}
               testIdPrefix="q1"
             />
 
@@ -320,7 +331,7 @@ export default function PauliTrainerPage() {
             <PauliSelector
               label="QUBIT 0 (P0)"
               selected={guessP0}
-              onSelect={setGuessP0}
+              onSelect={(p) => { setGuessP0(p); resetIfWrong(); }}
               testIdPrefix="q0"
             />
 

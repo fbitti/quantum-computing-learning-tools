@@ -39,26 +39,33 @@ function StateDisplay({ coords, quatState }: { coords: BlochCoords; quatState?: 
   const alphaStr = formatComplex(ket.alpha[0], ket.alpha[1]);
   const betaStr = formatComplex(ket.beta[0], ket.beta[1]);
 
-  // Compute the relative phase from the quaternion state.
-  // The quaternion (w, x, y, z) maps to |ψ⟩ = (w + iz)|0⟩ + (-y + ix)|1⟩.
-  // The relative phase is arg(β) - arg(α) = arg((-y + ix)(w - iz)).
-  // At the poles (|0⟩ or |1⟩), phase is undefined.
+  // Compute the quantum phase from the quaternion state.
+  // The quaternion (w, x, y, z) maps to the SU(2) state:
+  //   |ψ⟩ = α|0⟩ + β|1⟩  where  α = w - iz,  β = y - ix
+  // For superpositions: relative phase = arg(β) - arg(α)
+  // At the |1⟩ pole (α ≈ 0): show arg(β)
+  // At the |0⟩ pole (β ≈ 0): phase is undefined ("—")
   let phaseStr = "—";
   if (quatState) {
     const { w, x: qx, y: qy, z: qz } = quatState;
+    // α = w - iz,  β = y - ix
     const alphaAbs2 = w * w + qz * qz;
-    const betaAbs2 = qx * qx + qy * qy;
+    const betaAbs2 = qy * qy + qx * qx;
     if (alphaAbs2 > 1e-10 && betaAbs2 > 1e-10) {
-      // relative phase = arg(beta) - arg(alpha)
-      // alpha = w + iz, beta = -y + ix
-      const argAlpha = Math.atan2(qz, w);
-      const argBeta = Math.atan2(qx, -qy);
+      // Both amplitudes nonzero: show relative phase
+      const argAlpha = Math.atan2(-qz, w);
+      const argBeta = Math.atan2(-qx, qy);
       let relPhase = argBeta - argAlpha;
       // Normalize to (-π, π]
       if (relPhase > Math.PI) relPhase -= 2 * Math.PI;
       if (relPhase <= -Math.PI) relPhase += 2 * Math.PI;
       phaseStr = formatAngle(relPhase);
+    } else if (betaAbs2 > 1e-10) {
+      // At |1⟩ pole: show arg(β)
+      const argBeta = Math.atan2(-qx, qy);
+      phaseStr = formatAngle(argBeta);
     }
+    // At |0⟩ pole (betaAbs2 ≈ 0): leave as "—"
   }
 
   return (
