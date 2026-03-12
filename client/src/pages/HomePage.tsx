@@ -1,11 +1,10 @@
-import { useEffect, useState, useRef, useCallback } from "react";
+import { useEffect, useRef, useCallback } from "react";
 import { Link } from "wouter";
 import { BookOpen, Newspaper, Wrench, ArrowRight, Mail } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { motion } from "framer-motion";
-import { trackSignup, trackScrollDepth } from "@/lib/analytics";
+import { trackScrollDepth } from "@/lib/analytics";
 
 const tools = [
   {
@@ -94,9 +93,8 @@ export default function HomePage() {
     document.title = "One Million Qubits";
   }, []);
 
-  const [email, setEmail] = useState("");
-  const [submitted, setSubmitted] = useState(false);
   const signupRef = useRef<HTMLDivElement>(null);
+  const kitLoaded = useRef(false);
 
   // Scroll depth tracking
   const scrollMilestones = useRef(new Set<number>());
@@ -111,18 +109,20 @@ export default function HomePage() {
     }
   }, []);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (email.trim()) {
-      setSubmitted(true);
-      setEmail("");
-      trackSignup();
-    }
-  };
-
   const scrollToSignup = () => {
     signupRef.current?.scrollIntoView({ behavior: "smooth" });
   };
+
+  // Load Kit form script
+  useEffect(() => {
+    if (kitLoaded.current) return;
+    kitLoaded.current = true;
+    const script = document.createElement("script");
+    script.async = true;
+    script.setAttribute("data-uid", "1299dae075");
+    script.src = "https://one-million-qubits.kit.com/1299dae075/index.js";
+    document.getElementById("kit-form-container")?.appendChild(script);
+  }, []);
 
   return (
     <div className="h-full overflow-y-auto" onScroll={handleScroll}>
@@ -332,48 +332,13 @@ export default function HomePage() {
           >
             <Mail className="w-8 h-8 text-[#22D3EE] mx-auto mb-4" />
             <h2 className="text-2xl sm:text-3xl font-heading font-bold tracking-tight mb-3 text-[#F8FAFC]">
-              Get notified of updates, free tools & early access
+              Get quantum tools, visual explainers, and early access to new demos
             </h2>
             <p className="text-sm text-[#94A3B8] mb-8 max-w-md mx-auto font-sans">
               Join the newsletter&mdash;no spam, unsubscribe anytime.
             </p>
 
-            {!submitted ? (
-              <form
-                onSubmit={handleSubmit}
-                className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto"
-              >
-                <Input
-                  type="email"
-                  placeholder="you@example.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                  className="flex-1 bg-[#111827] border-[#334155] text-[#F8FAFC] placeholder:text-[#94A3B8]/50 font-sans"
-                  data-testid="input-email"
-                />
-                <Button type="submit" className="px-6 bg-[#7C3AED] hover:bg-[#7C3AED]/90 text-[#F8FAFC] font-sans" data-testid="button-subscribe">
-                  Subscribe
-                </Button>
-              </form>
-            ) : (
-              <motion.div
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                className="rounded-lg border border-green-500/30 bg-green-500/10 px-6 py-4 max-w-md mx-auto"
-              >
-                <p className="text-sm font-semibold text-green-400 font-sans">
-                  Thanks for signing up!
-                </p>
-                <p className="text-xs text-[#94A3B8] mt-1 font-sans">
-                  We'll reach out when there's something exciting to share.
-                </p>
-              </motion.div>
-            )}
-
-            <p className="text-[11px] text-[#94A3B8]/60 mt-4 font-sans">
-              We'll never share your email.
-            </p>
+            <div id="kit-form-container" className="max-w-md mx-auto" />
           </motion.div>
         </div>
       </section>
@@ -415,7 +380,10 @@ export default function HomePage() {
           </div>
 
           <p className="font-sans">&copy; {new Date().getFullYear()} One Million Qubits. All rights reserved.</p>
-          <p className="text-[10px] text-[#94A3B8]/60 font-sans">v0.1.3</p>
+          <p className="text-xs text-[#94A3B8] font-sans">
+            <a href="mailto:fernando@onemillionqubits.com" className="hover:text-[#F8FAFC] transition-colors">fernando@onemillionqubits.com</a>
+          </p>
+          <p className="text-[10px] text-[#94A3B8]/60 font-sans">v0.1.4</p>
         </div>
       </footer>
     </div>
