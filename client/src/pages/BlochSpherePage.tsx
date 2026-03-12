@@ -12,6 +12,7 @@ import {
   quatToBloch,
   formatAngle,
 } from "@/lib/quantum";
+import { trackToolLaunch, trackRotation, trackPresetClick } from "@/lib/analytics";
 
 const ANIM_DURATION_MS = 400;
 
@@ -77,7 +78,10 @@ function loadBlochState(): {
 }
 
 export default function BlochSpherePage() {
-  useEffect(() => { document.title = "Bloch Sphere Explorer | One Million Qubits"; }, []);
+  useEffect(() => {
+    document.title = "Bloch Sphere Explorer | One Million Qubits";
+    trackToolLaunch("bloch-sphere");
+  }, []);
 
   const saved = useRef(loadBlochState());
 
@@ -118,11 +122,13 @@ export default function BlochSpherePage() {
     setCrankOffsets(prev => ({ ...prev, [axis]: prev[axis] + totalAngle }));
     setActiveRotation(null);
     accumRef.current[axis] = 0;
+    trackRotation(axis, totalAngle);
   }, []);
 
   const handlePresetRotate = useCallback((axis: "x" | "y" | "z", angle: number, label: string) => {
     if (isAnimating) return;
     setIsAnimating(true);
+    trackPresetClick(label);
     setActiveRotation({ axis, angle: 0 });
     const startOffset = crankOffsets[axis];
     animateRotation(

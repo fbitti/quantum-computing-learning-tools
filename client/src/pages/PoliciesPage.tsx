@@ -27,9 +27,10 @@ export default function PoliciesPage() {
             </p>
             <h3 className="text-sm font-medium text-foreground pt-1">Analytics</h3>
             <p>
-              We may use basic, privacy-respecting analytics to understand general usage patterns
-              (such as which tools are most popular). These analytics do not track individual users
-              and do not collect personally identifiable information.
+              With your consent, we use Google Analytics and Vercel Analytics to understand general usage patterns
+              (such as which tools are most popular and how visitors navigate the site). Google Analytics uses cookies;
+              Vercel Analytics is cookie-free. Neither service is loaded until you accept analytics cookies
+              via the consent banner. No personally identifiable information is collected.
             </p>
             <h3 className="text-sm font-medium text-foreground pt-1">Third-Party Services</h3>
             <p>
@@ -83,19 +84,28 @@ export default function PoliciesPage() {
           <h2 className="text-base font-semibold mb-3">Cookie Policy</h2>
           <div className="text-sm text-muted-foreground space-y-2 leading-relaxed">
             <p>
-              This application uses minimal cookies and local storage to provide a functional experience.
+              This application uses minimal cookies and local storage. Analytics cookies are only set
+              after you give consent via the banner shown on your first visit.
             </p>
-            <h3 className="text-sm font-medium text-foreground pt-1">What We Use</h3>
+            <h3 className="text-sm font-medium text-foreground pt-1">Essential (always active)</h3>
             <ul className="list-disc pl-5 space-y-1">
               <li>
-                <span className="font-medium text-foreground">Essential cookies:</span>{" "}
-                Required for the application to function properly, such as session management.
-                These cannot be disabled.
+                <span className="font-medium text-foreground">Local storage:</span>{" "}
+                Your preferences (e.g. cookie consent choice, tool settings like crank positions
+                and quiz progress) are saved in your browser. This data never leaves your device.
+              </li>
+            </ul>
+            <h3 className="text-sm font-medium text-foreground pt-1">Analytics (consent required)</h3>
+            <ul className="list-disc pl-5 space-y-1">
+              <li>
+                <span className="font-medium text-foreground">Google Analytics cookies</span>{" "}
+                (<code className="text-xs">_ga</code>, <code className="text-xs">_ga_*</code>):{" "}
+                Used to distinguish visitors and understand site usage. Set only after you accept.
+                Expires after 2 years.
               </li>
               <li>
-                <span className="font-medium text-foreground">Local storage:</span>{" "}
-                Your preferences (such as theme settings) may be saved in your browser's local storage
-                so they persist between visits. This data never leaves your device.
+                <span className="font-medium text-foreground">Vercel Analytics &amp; Speed Insights:</span>{" "}
+                Cookie-free, privacy-respecting analytics. Loaded only after consent.
               </li>
             </ul>
             <h3 className="text-sm font-medium text-foreground pt-1">What We Don't Use</h3>
@@ -103,10 +113,11 @@ export default function PoliciesPage() {
               We do not use advertising cookies, tracking cookies, or any third-party cookies
               for marketing or profiling purposes.
             </p>
-            <h3 className="text-sm font-medium text-foreground pt-1">Managing Cookies</h3>
+            <h3 className="text-sm font-medium text-foreground pt-1">Changing Your Choice</h3>
             <p>
-              You can manage or delete cookies through your browser settings. Disabling essential cookies
-              may affect the functionality of the application.
+              You can change your cookie preference at any time by clearing your browser's local storage
+              for this site, which will show the consent banner again on your next visit.
+              You can also manage or delete cookies through your browser settings.
             </p>
           </div>
         </section>

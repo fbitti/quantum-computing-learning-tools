@@ -1,10 +1,11 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { Link } from "wouter";
 import { Atom, Grid3X3, BookOpen, Newspaper, Wrench, ArrowRight, Mail, Sparkles } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { motion } from "framer-motion";
+import { trackSignup, trackScrollDepth } from "@/lib/analytics";
 
 const tools = [
   {
@@ -99,11 +100,25 @@ export default function HomePage() {
   const [submitted, setSubmitted] = useState(false);
   const signupRef = useRef<HTMLDivElement>(null);
 
+  // Scroll depth tracking
+  const scrollMilestones = useRef(new Set<number>());
+  const handleScroll = useCallback((e: React.UIEvent<HTMLDivElement>) => {
+    const el = e.currentTarget;
+    const pct = Math.round((el.scrollTop / (el.scrollHeight - el.clientHeight)) * 100);
+    for (const milestone of [25, 50, 75, 100]) {
+      if (pct >= milestone && !scrollMilestones.current.has(milestone)) {
+        scrollMilestones.current.add(milestone);
+        trackScrollDepth(milestone);
+      }
+    }
+  }, []);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (email.trim()) {
       setSubmitted(true);
       setEmail("");
+      trackSignup();
     }
   };
 
@@ -112,7 +127,7 @@ export default function HomePage() {
   };
 
   return (
-    <div className="h-full overflow-y-auto">
+    <div className="h-full overflow-y-auto" onScroll={handleScroll}>
       {/* ===== Hero Section ===== */}
       <section className="relative min-h-[85vh] flex items-center justify-center overflow-hidden bg-gradient-to-b from-[hsl(220,20%,6%)] via-[hsl(220,25%,8%)] to-[hsl(220,20%,10%)]">
         {/* Animated quantum particles */}

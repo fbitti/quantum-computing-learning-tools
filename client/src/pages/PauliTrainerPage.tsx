@@ -15,6 +15,7 @@ import {
   isZero,
   PAULI_LABELS,
 } from "@/lib/pauli";
+import { trackToolLaunch, trackPauliCheck } from "@/lib/analytics";
 
 function MatrixDisplay({
   matrix,
@@ -102,6 +103,7 @@ function PauliSelector({
 export default function PauliTrainerPage() {
   useEffect(() => {
     document.title = "Pauli Trainer | One Million Qubits";
+    trackToolLaunch("pauli-trainer");
   }, []);
 
   const [includePhases, setIncludePhases] = useState(() => {
@@ -147,6 +149,7 @@ export default function PauliTrainerPage() {
       guessPhase === challenge.phase;
     setCorrect(isCorrect);
     setChecked(true);
+    trackPauliCheck(isCorrect);
     setScore((prev) => ({
       correct: prev.correct + (isCorrect ? 1 : 0),
       total: prev.total + 1,
