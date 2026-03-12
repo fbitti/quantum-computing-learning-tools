@@ -36,7 +36,7 @@ function MatrixDisplay({
   return (
     <div className="flex flex-col gap-0 w-fit mx-auto" data-testid="matrix-display">
       {/* Column basis labels */}
-      <div className="flex gap-1 mb-1 ml-12 sm:ml-14">
+      <div className="flex gap-1 mb-1">
         {BASIS_LABELS.map((label, c) => (
           <div
             key={`col-${c}`}
@@ -46,13 +46,9 @@ function MatrixDisplay({
           </div>
         ))}
       </div>
-      {/* Matrix rows with row basis labels */}
+      {/* Matrix rows with row basis labels on the right */}
       {[0, 1, 2, 3].map((r) => (
         <div key={r} className={`flex gap-1 items-center ${r === 2 ? "mt-2" : r > 0 ? "mt-1" : ""}`}>
-          {/* Row basis label */}
-          <div className="w-10 sm:w-12 text-right text-[10px] font-mono text-muted-foreground pr-1 flex-shrink-0">
-            {BASIS_LABELS[r]}
-          </div>
           {[0, 1, 2, 3].map((c) => {
             const cell = matrix[r][c];
             const nonZero = !isZero(cell);
@@ -77,6 +73,10 @@ function MatrixDisplay({
               </div>
             );
           })}
+          {/* Row basis label on the right */}
+          <div className="w-10 sm:w-12 text-left text-[10px] font-mono text-muted-foreground pl-1 flex-shrink-0">
+            {BASIS_LABELS[r]}
+          </div>
         </div>
       ))}
     </div>
@@ -172,7 +172,6 @@ function PauliSelector({
           />
         ))}
       </div>
-      <p className="text-[10px] text-muted-foreground/60 text-center">Hover or long-press a gate to see its matrix</p>
     </div>
   );
 }
@@ -329,6 +328,7 @@ export default function PauliTrainerPage() {
           <p>
             Turn on Global Phases to include overall factors ±1 and ±i multiplying the entire operator.
           </p>
+          <p>Hover or long-press a gate button to see its matrix.</p>
         </div>
       )}
 
