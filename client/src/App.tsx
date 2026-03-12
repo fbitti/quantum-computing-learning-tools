@@ -1,10 +1,14 @@
-import { Switch, Route } from "wouter";
+import { useEffect } from "react";
+import { Switch, Route, useLocation } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/react";
+import { ConsentProvider, useConsent } from "@/components/CookieConsent";
+import CookieConsentBanner from "@/components/CookieConsent";
+import { trackPageView } from "@/lib/analytics";
 import Layout from "@/components/Layout";
 import HomePage from "@/pages/HomePage";
 import BlochSpherePage from "@/pages/BlochSpherePage";
@@ -13,6 +17,32 @@ import AboutPage from "@/pages/AboutPage";
 import NewsletterPage from "@/pages/NewsletterPage";
 import PoliciesPage from "@/pages/PoliciesPage";
 import NotFound from "@/pages/not-found";
+
+/** Track SPA route changes in GA. */
+function RouteTracker() {
+  const [location] = useLocation();
+  const { consent } = useConsent();
+
+  useEffect(() => {
+    if (consent === "accepted") {
+      trackPageView(location);
+    }
+  }, [location, consent]);
+
+  return null;
+}
+
+/** Conditionally render Vercel Analytics & SpeedInsights based on consent. */
+function ConsentAnalytics() {
+  const { consent } = useConsent();
+  if (consent !== "accepted") return null;
+  return (
+    <>
+      <Analytics />
+      <SpeedInsights />
+    </>
+  );
+}
 
 function Router() {
   return (
@@ -34,10 +64,13 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        <Toaster />
-        <Router />
-        <Analytics />
-        <SpeedInsights />
+        <ConsentProvider>
+          <Toaster />
+          <Router />
+          <RouteTracker />
+          <ConsentAnalytics />
+          <CookieConsentBanner />
+        </ConsentProvider>
       </TooltipProvider>
     </QueryClientProvider>
   );
