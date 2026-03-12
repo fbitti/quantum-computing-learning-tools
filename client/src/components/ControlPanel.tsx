@@ -40,8 +40,8 @@ function StateDisplay({ coords }: { coords: BlochCoords }) {
   return (
     <div className="space-y-3">
       <div className="flex items-center gap-2">
-        <Zap className="w-4 h-4 text-amber-500" />
-        <h3 className="text-sm font-semibold">Quantum State</h3>
+        <Zap className="w-4 h-4 text-[#22D3EE]" />
+        <h3 className="text-sm font-heading font-semibold text-[#F8FAFC]">Quantum State</h3>
       </div>
 
       <div className="bg-muted/50 rounded-md p-3 font-mono text-sm space-y-1.5">
@@ -229,8 +229,8 @@ export default function ControlPanel({
   return (
     <div className="flex flex-col gap-4 h-full overflow-y-auto p-4">
       <div>
-        <h3 className="text-sm font-semibold mb-3">Rotation Cranks</h3>
-        <p className="text-xs text-muted-foreground mb-3">
+        <h3 className="text-sm font-heading font-semibold mb-3 text-[#F8FAFC]">Rotation Cranks</h3>
+        <p className="text-xs text-[#94A3B8] mb-3 font-sans">
           Drag to rotate the state vector around each axis. Each crank turns the Bloch sphere like a physical rotation gate.
         </p>
         <div className="flex justify-center gap-4 flex-wrap">

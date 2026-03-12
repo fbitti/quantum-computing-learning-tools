@@ -73,20 +73,20 @@ export default function CookieConsentBanner() {
 
   return (
     <div className="fixed bottom-0 left-0 right-0 z-[100] p-3 sm:p-4">
-      <div className="max-w-lg mx-auto bg-card border border-border rounded-lg shadow-lg p-4 flex flex-col gap-3">
-        <p className="text-xs text-muted-foreground leading-relaxed">
+      <div className="max-w-lg mx-auto bg-[#111827] border border-[#1D2755]/50 rounded-lg shadow-lg p-4 flex flex-col gap-3">
+        <p className="text-xs text-[#94A3B8] leading-relaxed font-sans">
           We use cookies and analytics (Google Analytics, Vercel Analytics) to understand how the site is used and improve your experience.
           No personal data is collected. See our{" "}
-          <Link href="/policies" className="text-primary underline underline-offset-2">
+          <Link href="/policies" className="text-[#22D3EE] underline underline-offset-2">
             Cookie Policy
           </Link>{" "}
           for details.
         </p>
         <div className="flex gap-2 justify-end">
-          <Button variant="outline" size="sm" className="text-xs" onClick={decline}>
+          <Button variant="outline" size="sm" className="text-xs border-[#334155] text-[#F8FAFC] hover:bg-[#1D2755]/50 font-sans" onClick={decline}>
             Decline
           </Button>
-          <Button size="sm" className="text-xs" onClick={accept}>
+          <Button size="sm" className="text-xs bg-[#7C3AED] hover:bg-[#7C3AED]/90 text-[#F8FAFC] font-sans" onClick={accept}>
             Accept
           </Button>
         </div>

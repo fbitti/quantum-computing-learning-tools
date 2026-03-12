@@ -188,17 +188,17 @@ export default function BlochSpherePage() {
 
   return (
     <div className="flex flex-col h-full w-full overflow-hidden">
-      <div className="flex items-center justify-between gap-2 px-3 py-2 border-b border-border bg-card/50 flex-shrink-0">
+      <div className="flex items-center justify-between gap-2 px-3 py-2 border-b border-[#1D2755]/50 bg-[#0B1020]/80 backdrop-blur-sm flex-shrink-0">
         <div className="flex items-center gap-2">
           <Link href="/">
             <Button variant="ghost" size="icon" data-testid="button-back-home">
               <ArrowLeft className="w-3.5 h-3.5" />
             </Button>
           </Link>
-          <h1 className="text-sm font-bold tracking-tight" data-testid="text-title">Bloch Sphere Explorer</h1>
+          <h1 className="text-sm font-heading font-bold tracking-tight text-[#F8FAFC]" data-testid="text-title">Bloch Sphere Explorer</h1>
         </div>
         <div className="flex items-center gap-1">
-          <Button variant="outline" size="sm" onClick={handleReset} data-testid="button-reset">
+          <Button variant="outline" size="sm" onClick={handleReset} className="border-[#334155] text-[#F8FAFC] hover:bg-[#1D2755]/50 font-sans" data-testid="button-reset">
             <RotateCcw className="w-3.5 h-3.5 mr-1.5" />
             Reset
           </Button>
@@ -214,15 +214,15 @@ export default function BlochSpherePage() {
       </div>
 
       {showHelp && (
-        <div className="bg-muted/60 border-b border-border px-3 py-2 text-[11px] text-muted-foreground flex-shrink-0 relative">
+        <div className="bg-[#111827]/80 border-b border-[#1D2755]/50 px-3 py-2 text-[11px] text-[#94A3B8] flex-shrink-0 relative font-sans">
           <button
             onClick={() => setShowHelp(false)}
-            className="absolute top-1.5 right-2 text-muted-foreground/60 hover-elevate rounded-sm p-0.5"
+            className="absolute top-1.5 right-2 text-[#94A3B8]/60 hover:text-[#F8FAFC] rounded-sm p-0.5"
             data-testid="button-close-help"
           >
             <X className="w-3.5 h-3.5" />
           </button>
-          <p className="font-semibold text-xs text-foreground mb-0.5">How to use</p>
+          <p className="font-semibold text-xs text-[#F8FAFC] mb-0.5 font-heading">How to use</p>
           <p>Drag the cranks to apply Rx, Ry, and Rz rotations. Use the preset angle buttons for common gate angles.</p>
           <p>Open the Gates tab to try gate shortcuts and decompositions with the same Bloch-sphere action. Global phase is ignored in this explorer.</p>
           <p>Scroll or pinch to zoom the sphere.</p>
@@ -236,7 +236,7 @@ export default function BlochSpherePage() {
           </div>
         </div>
 
-        <div className="flex-1 lg:flex-none lg:w-[380px] border-t lg:border-t-0 lg:border-l border-border bg-card/50 overflow-y-auto min-h-0">
+        <div className="flex-1 lg:flex-none lg:w-[380px] border-t lg:border-t-0 lg:border-l border-[#1D2755]/50 bg-[#111827]/50 overflow-y-auto min-h-0">
           <ControlPanel
             coords={coords}
             history={history}

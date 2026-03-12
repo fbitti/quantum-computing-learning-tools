@@ -282,19 +282,19 @@ export default function PauliTrainerPage() {
 
   return (
     <div className="flex flex-col h-full w-full overflow-hidden">
-      <div className="flex items-center justify-between gap-2 px-3 py-2 border-b border-border bg-card/50 flex-shrink-0">
+      <div className="flex items-center justify-between gap-2 px-3 py-2 border-b border-[#1D2755]/50 bg-[#0B1020]/80 backdrop-blur-sm flex-shrink-0">
         <div className="flex items-center gap-2">
           <Link href="/">
             <Button variant="ghost" size="icon" data-testid="button-back-home">
               <ArrowLeft className="w-3.5 h-3.5" />
             </Button>
           </Link>
-          <h1 className="text-sm font-bold tracking-tight" data-testid="text-title">
+          <h1 className="text-sm font-heading font-bold tracking-tight text-[#F8FAFC]" data-testid="text-title">
             Pauli Trainer
           </h1>
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-xs text-muted-foreground" data-testid="text-score">
+          <span className="text-xs text-[#94A3B8] font-sans" data-testid="text-score">
             {score.correct}/{score.total}
           </span>
           <Button
@@ -309,15 +309,15 @@ export default function PauliTrainerPage() {
       </div>
 
       {showHelp && (
-        <div className="bg-muted/60 border-b border-border px-3 py-2 text-[11px] text-muted-foreground flex-shrink-0 relative">
+        <div className="bg-[#111827]/80 border-b border-[#1D2755]/50 px-3 py-2 text-[11px] text-[#94A3B8] flex-shrink-0 relative font-sans">
           <button
             onClick={() => setShowHelp(false)}
-            className="absolute top-1.5 right-2 text-muted-foreground/60 rounded-sm p-0.5"
+            className="absolute top-1.5 right-2 text-[#94A3B8]/60 hover:text-[#F8FAFC] rounded-sm p-0.5"
             data-testid="button-close-help"
           >
             <X className="w-3.5 h-3.5" />
           </button>
-          <p className="font-semibold text-xs text-foreground mb-0.5">How to use</p>
+          <p className="font-semibold text-xs text-[#F8FAFC] mb-0.5 font-heading">How to use</p>
           <p>
             A 4×4 matrix is shown for a two-qubit Pauli operator of the form q1 ⊗ q0. Your task is to identify which Pauli gate acts on each qubit.
           </p>
@@ -361,12 +361,12 @@ export default function PauliTrainerPage() {
 
           <div className="flex flex-col gap-5 w-full max-w-xs mx-auto lg:mx-0">
             <div className="text-center">
-              <h2 className="text-base font-semibold mb-1" data-testid="text-identify">
+              <h2 className="text-base font-heading font-semibold mb-1 text-[#F8FAFC]" data-testid="text-identify">
                 Identify the Operator
               </h2>
-              <p className="text-xs text-muted-foreground">
-                Select the combination for <span className="text-primary font-medium">q1</span> and{" "}
-                <span className="text-primary font-medium">q0</span>
+              <p className="text-xs text-[#94A3B8] font-sans">
+                Select the combination for <span className="text-[#7C3AED] font-medium">q1</span> and{" "}
+                <span className="text-[#7C3AED] font-medium">q0</span>
               </p>
             </div>
 
