@@ -333,8 +333,8 @@ export default function PauliTrainerPage() {
       )}
 
       <div className="flex-1 overflow-y-auto">
-        <div className="max-w-3xl mx-auto px-4 py-6 flex flex-col lg:flex-row gap-8 items-start justify-center">
-          <div className="flex flex-col items-center gap-4 flex-shrink-0">
+        <div className="max-w-3xl mx-auto px-4 py-6 flex flex-col lg:flex-row gap-8 items-center lg:items-start justify-center">
+          <div className="flex flex-col items-center gap-4 flex-shrink-0 w-full lg:w-auto">
             <MatrixDisplay
               matrix={challenge.matrix}
               highlight={

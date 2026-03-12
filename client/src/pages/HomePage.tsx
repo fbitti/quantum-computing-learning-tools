@@ -166,7 +166,7 @@ export default function HomePage() {
             transition={{ duration: 0.8, ease: "easeOut" }}
           >
             <div className="flex items-center justify-center gap-3 mb-6">
-              <img src="/logo.png" alt="1MQ" className="h-12 sm:h-14 w-auto" />
+              <img src="/logo.png" alt="1MQ" className="h-20 sm:h-24 w-auto" />
             </div>
 
             <h1 className="text-4xl sm:text-5xl md:text-6xl font-heading font-bold tracking-tight text-[#F8FAFC] mb-4 leading-tight">
@@ -415,7 +415,7 @@ export default function HomePage() {
           </div>
 
           <p className="font-sans">&copy; {new Date().getFullYear()} One Million Qubits. All rights reserved.</p>
-          <p className="text-[10px] text-[#94A3B8]/60 font-sans">v0.1.2</p>
+          <p className="text-[10px] text-[#94A3B8]/60 font-sans">v0.1.3</p>
         </div>
       </footer>
     </div>
