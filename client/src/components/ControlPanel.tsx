@@ -185,7 +185,11 @@ function KnownSequences({ onApplySequence }: { onApplySequence: (ops: RotationOp
   return (
     <div className="space-y-2">
       <p className="text-xs text-muted-foreground">
-        Apply known gate decompositions to the current state. Click twice to verify H&middot;H = I.
+        Apply known gate decompositions to the current state.
+      </p>
+      <p className="text-xs text-muted-foreground">
+        These decompositions match the same Bloch-sphere motion as the named gate.
+        Global phase is ignored in this explorer.
       </p>
       <div className="space-y-1.5">
         {KNOWN_EQUIVALENCES.map((seq) => (

@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { ArrowLeft, HelpCircle, X } from "lucide-react";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
@@ -17,6 +17,8 @@ import {
 } from "@/lib/pauli";
 import { trackToolLaunch, trackPauliCheck } from "@/lib/analytics";
 
+const BASIS_LABELS = ["\u222300\u27e9", "\u222301\u27e9", "\u222310\u27e9", "\u222311\u27e9"];
+
 function MatrixDisplay({
   matrix,
   highlight,
@@ -32,9 +34,25 @@ function MatrixDisplay({
   };
 
   return (
-    <div className="flex flex-col gap-2 w-fit mx-auto" data-testid="matrix-display">
+    <div className="flex flex-col gap-0 w-fit mx-auto" data-testid="matrix-display">
+      {/* Column basis labels */}
+      <div className="flex gap-1 mb-1 ml-12 sm:ml-14">
+        {BASIS_LABELS.map((label, c) => (
+          <div
+            key={`col-${c}`}
+            className={`w-14 sm:w-16 text-center text-[10px] font-mono text-muted-foreground ${c === 2 ? "ml-2" : ""}`}
+          >
+            {label}
+          </div>
+        ))}
+      </div>
+      {/* Matrix rows with row basis labels */}
       {[0, 1, 2, 3].map((r) => (
-        <div key={r} className={`flex gap-1 ${r === 2 ? "mt-1" : ""}`}>
+        <div key={r} className={`flex gap-1 items-center ${r === 2 ? "mt-2" : r > 0 ? "mt-1" : ""}`}>
+          {/* Row basis label */}
+          <div className="w-10 sm:w-12 text-right text-[10px] font-mono text-muted-foreground pr-1 flex-shrink-0">
+            {BASIS_LABELS[r]}
+          </div>
           {[0, 1, 2, 3].map((c) => {
             const cell = matrix[r][c];
             const nonZero = !isZero(cell);
@@ -45,7 +63,7 @@ function MatrixDisplay({
             }
             const q = quadrant(r, c);
             const quadrantLabel =
-              q === "TL" ? "Q₁" : q === "TR" ? "Q₂" : q === "BL" ? "Q₃" : "Q₄";
+              q === "TL" ? "Q\u2081" : q === "TR" ? "Q\u2082" : q === "BL" ? "Q\u2083" : "Q\u2084";
             return (
               <div
                 key={`${r}-${c}`}
@@ -61,6 +79,68 @@ function MatrixDisplay({
           })}
         </div>
       ))}
+    </div>
+  );
+}
+
+/** Human-readable 2×2 matrix strings for each Pauli gate. */
+const PAULI_MATRIX_DISPLAY: Record<PauliLabel, string> = {
+  I: "[1, 0]\n[0, 1]",
+  X: "[0, 1]\n[1, 0]",
+  Y: "[0, -i]\n[i, \u20020]",
+  Z: "[1, \u20020]\n[0, -1]",
+};
+
+function PauliGateButton({
+  gate,
+  selected,
+  onSelect,
+  testId,
+}: {
+  gate: PauliLabel;
+  selected: boolean;
+  onSelect: () => void;
+  testId: string;
+}) {
+  const [showMatrix, setShowMatrix] = useState(false);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const startReveal = useCallback(() => {
+    timerRef.current = setTimeout(() => setShowMatrix(true), 800);
+  }, []);
+
+  const cancelReveal = useCallback(() => {
+    if (timerRef.current) clearTimeout(timerRef.current);
+    timerRef.current = null;
+    setShowMatrix(false);
+  }, []);
+
+  // Clean up on unmount
+  useEffect(() => {
+    return () => { if (timerRef.current) clearTimeout(timerRef.current); };
+  }, []);
+
+  return (
+    <div className="relative">
+      <Button
+        variant={selected ? "default" : "outline"}
+        size="sm"
+        className="w-12 font-mono font-bold"
+        onClick={onSelect}
+        onMouseEnter={startReveal}
+        onMouseLeave={cancelReveal}
+        onTouchStart={startReveal}
+        onTouchEnd={cancelReveal}
+        data-testid={testId}
+      >
+        {gate}
+      </Button>
+      {showMatrix && (
+        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-popover border border-border rounded-md shadow-lg px-3 py-2 z-50 whitespace-pre font-mono text-xs leading-relaxed pointer-events-none">
+          <span className="block text-center text-[10px] text-muted-foreground mb-1 font-sans">{gate} gate</span>
+          {PAULI_MATRIX_DISPLAY[gate]}
+        </div>
+      )}
     </div>
   );
 }
@@ -83,18 +163,16 @@ function PauliSelector({
       </p>
       <div className="flex gap-2 justify-center">
         {PAULI_LABELS.map((p) => (
-          <Button
+          <PauliGateButton
             key={p}
-            variant={selected === p ? "default" : "outline"}
-            size="sm"
-            className="w-12 font-mono font-bold"
-            onClick={() => onSelect(p)}
-            data-testid={`${testIdPrefix}-${p}`}
-          >
-            {p}
-          </Button>
+            gate={p}
+            selected={selected === p}
+            onSelect={() => onSelect(p)}
+            testId={`${testIdPrefix}-${p}`}
+          />
         ))}
       </div>
+      <p className="text-[10px] text-muted-foreground/60 text-center">Hover or long-press a gate to see its matrix</p>
     </div>
   );
 }
@@ -242,12 +320,14 @@ export default function PauliTrainerPage() {
           </button>
           <p className="font-semibold text-xs text-foreground mb-0.5">How to use</p>
           <p>
-            A 4×4 matrix is shown representing a two-qubit Pauli operator (P1 ⊗ P0).
-            Identify which Pauli gate applies to each qubit.
+            A 4×4 matrix is shown for a two-qubit Pauli operator of the form q1 ⊗ q0. Your task is to identify which Pauli gate acts on each qubit.
+          </p>
+          <p>The left factor acts on qubit 1, and the right factor acts on qubit 0.</p>
+          <p>
+            Remember: I = identity, X = bit flip, Y = bit flip with phase, Z = phase flip.
           </p>
           <p>
-            I = identity, X = bit flip, Y = bit & phase flip, Z = phase flip.
-            Toggle "Global Phases" to include ±1, ±i phase factors.
+            Turn on Global Phases to include overall factors ±1 and ±i multiplying the entire operator.
           </p>
         </div>
       )}
@@ -321,7 +401,7 @@ export default function PauliTrainerPage() {
             )}
 
             <PauliSelector
-              label="QUBIT 1 (P1)"
+              label="QUBIT 1 (LEFT)"
               selected={guessP1}
               onSelect={(p) => { setGuessP1(p); resetIfWrong(); }}
               testIdPrefix="q1"
@@ -332,7 +412,7 @@ export default function PauliTrainerPage() {
             </div>
 
             <PauliSelector
-              label="QUBIT 0 (P0)"
+              label="QUBIT 0 (RIGHT)"
               selected={guessP0}
               onSelect={(p) => { setGuessP0(p); resetIfWrong(); }}
               testIdPrefix="q0"

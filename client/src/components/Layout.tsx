@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 const tools = [
-  { href: "/bloch-sphere", label: "Bloch Sphere", icon: Atom },
+  { href: "/bloch-sphere", label: "Bloch Sphere Explorer", icon: Atom },
   { href: "/pauli-trainer", label: "Pauli Trainer", icon: Grid3X3 },
 ];
 

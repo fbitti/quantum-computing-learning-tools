@@ -223,8 +223,9 @@ export default function BlochSpherePage() {
             <X className="w-3.5 h-3.5" />
           </button>
           <p className="font-semibold text-xs text-foreground mb-0.5">How to use</p>
-          <p>Drag the cranks to apply Rx, Ry, Rz rotations. Use preset angle buttons for exact quantum gate angles.</p>
-          <p>Try the "Gates" tab for gate decompositions like H = Rz(&pi;/2) Rx(&pi;/2) Rz(&pi;/2). Scroll or pinch to zoom the sphere.</p>
+          <p>Drag the cranks to apply Rx, Ry, and Rz rotations. Use the preset angle buttons for common gate angles.</p>
+          <p>Open the Gates tab to try gate shortcuts and decompositions with the same Bloch-sphere action. Global phase is ignored in this explorer.</p>
+          <p>Scroll or pinch to zoom the sphere.</p>
         </div>
       )}
 
