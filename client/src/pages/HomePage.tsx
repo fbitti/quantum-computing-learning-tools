@@ -93,8 +93,46 @@ export default function HomePage() {
     document.title = "One Million Qubits";
   }, []);
 
+  useEffect(() => {
+    const existingScript = document.querySelector(
+      'script[data-mailerlite-universal="true"]'
+    ) as HTMLScriptElement | null;
+
+    if (existingScript) {
+      if ((window as any).ml) {
+        (window as any).ml('account', '2187339');
+      }
+      return;
+    }
+
+    (function (
+      w: any,
+      d: Document,
+      e: string,
+      u: string,
+      f: string,
+      l?: HTMLScriptElement,
+      n?: Element | null
+    ) {
+      w[f] =
+        w[f] ||
+        function () {
+          (w[f].q = w[f].q || []).push(arguments);
+        };
+
+      l = d.createElement(e) as HTMLScriptElement;
+      l.async = true;
+      l.src = u;
+      l.setAttribute('data-mailerlite-universal', 'true');
+
+      n = d.getElementsByTagName(e)[0];
+      n?.parentNode?.insertBefore(l, n);
+    })(window as any, document, 'script', 'https://assets.mailerlite.com/js/universal.js', 'ml');
+
+    (window as any).ml('account', '2187339');
+  }, []);
+
   const signupRef = useRef<HTMLDivElement>(null);
-  const kitLoaded = useRef(false);
 
   // Scroll depth tracking
   const scrollMilestones = useRef(new Set<number>());
@@ -112,17 +150,6 @@ export default function HomePage() {
   const scrollToSignup = () => {
     signupRef.current?.scrollIntoView({ behavior: "smooth" });
   };
-
-  // Load Kit form script
-  useEffect(() => {
-    if (kitLoaded.current) return;
-    kitLoaded.current = true;
-    const script = document.createElement("script");
-    script.async = true;
-    script.setAttribute("data-uid", "1299dae075");
-    script.src = "https://one-million-qubits.kit.com/1299dae075/index.js";
-    document.getElementById("kit-form-container")?.appendChild(script);
-  }, []);
 
   return (
     <div className="h-full overflow-y-auto" onScroll={handleScroll}>
@@ -338,7 +365,7 @@ export default function HomePage() {
               Join the newsletter&mdash;no spam, unsubscribe anytime.
             </p>
 
-            <div id="kit-form-container" className="max-w-md mx-auto" />
+            <div className="ml-embedded max-w-md mx-auto" data-form="cVWsn1"></div>
           </motion.div>
         </div>
       </section>
