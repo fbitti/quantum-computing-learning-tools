@@ -94,7 +94,6 @@ export default function HomePage() {
   }, []);
 
   const signupRef = useRef<HTMLDivElement>(null);
-  const kitLoaded = useRef(false);
 
   // Scroll depth tracking
   const scrollMilestones = useRef(new Set<number>());
@@ -112,17 +111,6 @@ export default function HomePage() {
   const scrollToSignup = () => {
     signupRef.current?.scrollIntoView({ behavior: "smooth" });
   };
-
-  // Load Kit form script
-  useEffect(() => {
-    if (kitLoaded.current) return;
-    kitLoaded.current = true;
-    const script = document.createElement("script");
-    script.async = true;
-    script.setAttribute("data-uid", "1299dae075");
-    script.src = "https://one-million-qubits.kit.com/1299dae075/index.js";
-    document.getElementById("kit-form-container")?.appendChild(script);
-  }, []);
 
   return (
     <div className="h-full overflow-y-auto" onScroll={handleScroll}>
@@ -338,7 +326,7 @@ export default function HomePage() {
               Join the newsletter&mdash;no spam, unsubscribe anytime.
             </p>
 
-            <div id="kit-form-container" className="max-w-md mx-auto" />
+            <div className="ml-embedded max-w-md mx-auto" data-form="cVWsn1"></div>
           </motion.div>
         </div>
       </section>
