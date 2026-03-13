@@ -348,7 +348,7 @@ export default function HomePage() {
         <div className="max-w-4xl mx-auto flex flex-col items-center gap-6 text-xs text-[#94A3B8]">
           <div className="flex items-center gap-2.5">
             <img src="/logo.png" alt="1MQ" className="h-5 w-auto" />
-            <span className="font-heading font-semibold text-[#F8FAFC]">One Million Qubits</span>
+            <span className="font-heading font-semibold text-[#F8FAFC]">One Million Qubits™</span>
           </div>
 
           {/* Social media links */}
@@ -379,7 +379,7 @@ export default function HomePage() {
             </Link>
           </div>
 
-          <p className="font-sans">&copy; {new Date().getFullYear()} One Million Qubits. All rights reserved.</p>
+          <p className="font-sans">&copy; {new Date().getFullYear()} One Million Qubits™. All rights reserved.</p>
           <p className="text-xs text-[#94A3B8] font-sans">
             <a href="mailto:fernando@onemillionqubits.com" className="hover:text-[#F8FAFC] transition-colors">fernando@onemillionqubits.com</a>
           </p>
