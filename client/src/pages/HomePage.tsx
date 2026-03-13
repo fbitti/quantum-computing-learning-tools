@@ -166,7 +166,7 @@ export default function HomePage() {
             transition={{ duration: 0.8, ease: "easeOut" }}
           >
             <div className="flex items-center justify-center gap-3 mb-6">
-              <img src="/logo.png" alt="1MQ" className="h-20 sm:h-24 w-auto" />
+              <img src="/logo.png" alt="1MQ" className="h-24 sm:h-28 w-auto" />
             </div>
 
             <h1 className="text-4xl sm:text-5xl md:text-6xl font-heading font-bold tracking-tight text-[#F8FAFC] mb-4 leading-tight">
@@ -347,7 +347,7 @@ export default function HomePage() {
       <footer className="border-t border-[#1D2755]/50 py-8 px-4 bg-[#0B1020]">
         <div className="max-w-4xl mx-auto flex flex-col items-center gap-6 text-xs text-[#94A3B8]">
           <div className="flex items-center gap-2.5">
-            <img src="/logo.png" alt="1MQ" className="h-5 w-auto" />
+            <img src="/logo.png" alt="1MQ" className="h-6 w-auto" />
             <span className="font-heading font-semibold text-[#F8FAFC]">One Million Qubits™</span>
           </div>
 
