@@ -408,9 +408,7 @@ export default function HomePage() {
 
           <p className="font-sans">&copy; {new Date().getFullYear()} One Million Qubits™. All rights reserved.</p>
           <p className="text-xs text-[#94A3B8] font-sans">
-            IBM, Qiskit, and other third-party names are trademarks of their respective owners.
-          </p>
-          <p className="text-xs text-[#94A3B8] font-sans">
+            IBM, Qiskit, and other third-party names are trademarks of their respective owners.<br>
             References on this site are for identification and educational purposes only and do not imply affiliation, endorsement, sponsorship, or official connection.
           </p>
           <p className="text-xs text-[#94A3B8] font-sans">
