@@ -179,8 +179,8 @@ function Axes() {
 
       <AxisLabel position={[labelOffset, 0, 0]} text="X  |+>" color={axisColorX} />
       <AxisLabel position={[-labelOffset, 0, 0]} text="-X  |->" color={axisColorX} />
-      <AxisLabel position={[0, 0, labelOffset]} text="Y  |i>" color={axisColorY} />
-      <AxisLabel position={[0, 0, -labelOffset]} text="-Y  |-i>" color={axisColorY} />
+      <AxisLabel position={[0, 0, labelOffset]}  text="-Y  |-i>" color={axisColorY} />
+      <AxisLabel position={[0, 0, -labelOffset]} text="Y  |i>"   color={axisColorY} />
       <AxisLabel position={[0, labelOffset, 0]} text="Z  |0>" color={axisColorZ} />
       <AxisLabel position={[0, -labelOffset, 0]} text="-Z  |1>" color={axisColorZ} />
     </>
@@ -194,7 +194,7 @@ function StateVector({ coords }: { coords: BlochCoords }) {
   useFrame(() => {
     if (!groupRef.current) return;
 
-    const dir = new THREE.Vector3(coords.x, coords.z, coords.y).normalize();
+    const dir = new THREE.Vector3(coords.x, coords.z, -coords.y).normalize();
     const up = new THREE.Vector3(0, 1, 0);
 
     const quaternion = new THREE.Quaternion();
@@ -241,9 +241,10 @@ function RotationRing({ axis, angle, visible }: { axis: "x" | "y" | "z"; angle: 
     // Bloch→Three.js mapping: (bloch_x, bloch_y, bloch_z) → (x, z, y)
     // Ring must trace the correct great-circle path for each rotation axis
     const getPoint = (a: number): [number, number, number] => {
-      if (axis === "z") return [r * Math.cos(a), 0, r * Math.sin(a)];
-      // Rx: starts at Bloch +Z (Three.js +Y), arcs toward Bloch -Y (Three.js -Z)
-      if (axis === "x") return [0, r * Math.cos(a), -r * Math.sin(a)];
+      // AFTER
+      if (axis === "x") return [0, r * Math.cos(a),  r * Math.sin(a)]; // sign flipped
+      if (axis === "z") return [r * Math.cos(a), 0,  -r * Math.sin(a)]; // sign flipped
+      // Rx: starts at Bloch +Z (Three.js +Y), arcs toward Bloch -Y (Three.js +Z)
       // Ry: starts at Bloch +Z (Three.js +Y), arcs toward Bloch +X (Three.js +X)
       return [r * Math.sin(a), r * Math.cos(a), 0];
     };
