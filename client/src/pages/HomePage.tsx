@@ -410,7 +410,7 @@ export default function HomePage() {
           <p className="text-xs text-[#94A3B8] font-sans">
             <a href="mailto:fernando@onemillionqubits.com" className="hover:text-[#F8FAFC] transition-colors">fernando@onemillionqubits.com</a>
           </p>
-          <p className="text-[10px] text-[#94A3B8]/60 font-sans">v0.1.4</p>
+          <p className="text-[10px] text-[#94A3B8]/60 font-sans">v0.1.5</p>
         </div>
       </footer>
     </div>
