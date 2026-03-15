@@ -41,18 +41,6 @@ export default function AboutPage() {
             certification.
           </p>
 
-          <div className="rounded-xl border border-white/10 bg-white/5 p-4 text-sm leading-relaxed text-slate-300">
-            <p>
-              One Million Qubits is an independent educational project. Any references to third-party
-              companies, products, technologies, or trademarks — including IBM and Qiskit — are for
-              identification, commentary, and educational purposes only.
-            </p>
-            <p className="mt-3">
-              Such references do not imply that this site is affiliated with, endorsed by, sponsored by,
-              or officially connected to those third parties. All trademarks belong to their respective owners.
-            </p>
-          </div>
-
           <div className="space-y-3 pt-2">
             <div className="flex items-center gap-2">
               <Award className="w-4 h-4 text-[#22D3EE]" />
@@ -90,6 +78,18 @@ export default function AboutPage() {
               fernando@onemillionqubits.com
             </a>
           </p>
+
+          <div className="rounded-xl border border-white/10 bg-white/5 p-4 text-sm leading-relaxed text-slate-300">
+            <p>
+              One Million Qubits is an independent educational project. Any references to third-party
+              companies, products, technologies, or trademarks — including IBM and Qiskit — are for
+              identification, commentary, and educational purposes only.
+            </p>
+            <p className="mt-3">
+              Such references do not imply that this site is affiliated with, endorsed by, sponsored by,
+              or officially connected to those third parties. All trademarks belong to their respective owners.
+            </p>
+          </div>
 
           <div className="flex items-center gap-4 pt-2">
             <a href="https://www.linkedin.com/in/fbitti" target="_blank" rel="noopener noreferrer" className="text-[#94A3B8] hover:text-[#F8FAFC] transition-colors">
