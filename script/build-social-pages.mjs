@@ -9,7 +9,7 @@ const pages = [
     filename: "bloch-sphere.html",
     title: "Bloch Sphere Explorer | One Million Qubits",
     description:
-      "Visualize single-qubit states and rotations with an interactive Bloch sphere. Explore Rx, Ry, Rz, gate decompositions, and geometric intuition.",
+      "Visualize single-qubit states and rotations with an interactive Bloch sphere. Explore Rx, Ry, Rz, and gate intuition.",
     url: "https://www.onemillionqubits.com/bloch-sphere",
     image: "https://www.onemillionqubits.com/og/bloch-sphere.jpg",
   },
@@ -17,7 +17,7 @@ const pages = [
     filename: "pauli-trainer.html",
     title: "Pauli Trainer | One Million Qubits",
     description:
-      "Practice recognizing two-qubit Pauli operators fast. Train pattern recognition for Qiskit-style questions without grinding through matrix multiplication.",
+      "Practice recognizing two-qubit Pauli operators fast. Train pattern recognition for Qiskit-style questions.",
     url: "https://www.onemillionqubits.com/pauli-trainer",
     image: "https://www.onemillionqubits.com/og/pauli-trainer.jpg",
   },
